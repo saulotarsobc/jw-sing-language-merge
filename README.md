@@ -5,20 +5,20 @@
 
 ## Python
 
-- [x] Location
-- [x] Tag
-- [x] TagMap
-- [x] Note
-- [x] Bookmark
-- [x] UserMark
-- [x] BlockRange
-- [x] InputField
-- LastModified
-- [x] IndependentMedia
-- [x] PlaylistItem
-- PlaylistItemAccuracy
-- [x] PlaylistItemIndependentMediaMap
-- [x] PlaylistItemLocationMap
-- [ ] PlaylistItemMarker
-- [ ] PlaylistItemMarkerParagraphMap
-- [ ] PlaylistItemMarkerBibleVerseMap
+- ✅ Location
+- ✅ Tag
+- ✅ TagMap
+- ✅ Note
+- ✅ Bookmark
+- ✅ UserMark
+- ✅ BlockRange
+- ✅ InputField
+- 🟥 LastModified
+- ✅ IndependentMedia
+- ✅ PlaylistItem
+- 🟥 PlaylistItemAccuracy
+- ✅ PlaylistItemIndependentMediaMap
+- ✅ PlaylistItemLocationMap
+- 🟥 PlaylistItemMarker
+- 🟥 PlaylistItemMarkerParagraphMap
+- 🟥 PlaylistItemMarkerBibleVerseMap
