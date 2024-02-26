@@ -165,8 +165,12 @@ def getDataFromDb2():
     # cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", data)
 
     # commit all
-    con2.commit().close()
-    con3.commit().close()
+    con2.commit()
+    con3.commit()
+
+    # close all
+    con2.close()
+    con3.close()
 
 
 def createNewBkpFIle():
