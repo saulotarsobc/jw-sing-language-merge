@@ -38,8 +38,8 @@ def copyAllFilesToData3():
             shutil.copy(f"./data-1/{file}", f"./data-3/{file}")
 
     for file in os.listdir("./data-2"):
-        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            shutil.copy(f"./data-2/{file}", f"./data-3/{file}")
+        # if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
+        shutil.copy(f"./data-2/{file}", f"./data-3/{file}")
 
 
 def copyThumbNail():
@@ -48,19 +48,28 @@ def copyThumbNail():
 
 
 def manifestGenerator():
-    now = datetime.now(pytz.timezone('Europe/Madrid'))
+    now = datetime.now(pytz.timezone('America/Santarem'))
     now_date = now.strftime("%Y-%m-%d")
     hour_minute_second = now.strftime("%H-%M-%S")
     now_iso = now.isoformat("T", "seconds")
     now_utc = now.astimezone(pytz.UTC)
     now_utc_iso = now_utc.isoformat("T", "seconds").replace('+00:00', 'Z')
-    schema_version = 14
+    schema_version = 11
 
     j = '{{"name":"jwlibrary-plus-backup_{0}","creationDate":"{1}","version":1,"type":0,"userDataBackup":{{"lastModifiedDate":"{2}","deviceName":"jwlibrary-plus","databaseName":"userData.db","schemaVersion":{3}}}}}'.format(
         now_date, now_date, now_iso, schema_version)
     manifest = json.loads(j)
 
     print(manifest)
+
+
+def createNewBkpFIle():
+    zf = zipfile.ZipFile('./merged.jwlibrary', "w",
+                         compression=zipfile.ZIP_DEFLATED)
+    for file in os.listdir('./data-3'):
+        zf.write(f"./data-3/{file}", arcname=file)
+
+    zf.close()
 
 
 def db3():
@@ -76,27 +85,31 @@ if __name__ == "__main__":
     clearDir("./data-3")
 
     print(">> Lendo bkp 1")
-    sleep(.3)
+    # sleep(.2)
     readData1()
 
     print(">> Lendo bkp 2")
-    sleep(.3)
+    # sleep(.2)
     readData2()
 
     print(">> Copiando todos os arquivos para /data-3")
-    sleep(.3)
+    # sleep(.2)
     copyAllFilesToData3()
 
     print(">> Copiando default_thumbnail.png para /data-3")
-    sleep(.3)
+    # sleep(.2)
     copyThumbNail()
 
     print(">> Criando e copiando manifest.json para /data-3")
-    sleep(.3)
+    # sleep(.2)
     manifestGenerator()
 
+    print(">> Criando novo .jwlibrary")
+    # sleep(.2)
+    createNewBkpFIle()
+
     # print('>> Limpando pastas...')
-    # sleep(.3)
+    sleep(.2)
     # clearDir("./data-1")
     # clearDir("./data-2")
     # clearDir("./data-3")
