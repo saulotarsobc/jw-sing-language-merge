@@ -48,19 +48,18 @@ def copyThumbNail():
 
 
 def manifestGenerator():
-    now = datetime.now(pytz.timezone('America/Santarem'))
+    now = datetime.now(pytz.timezone("America/Santarem"))
     now_date = now.strftime("%Y-%m-%d")
     hour_minute_second = now.strftime("%H-%M-%S")
     now_iso = now.isoformat("T", "seconds")
     now_utc = now.astimezone(pytz.UTC)
-    now_utc_iso = now_utc.isoformat("T", "seconds").replace('+00:00', 'Z')
+    now_utc_iso = now_utc.isoformat("T", "seconds").replace("+00:00", "Z")
     schema_version = 11
 
-    j = '{{"name":"jwlibrary-plus-backup_{0}","creationDate":"{1}","version":1,"type":0,"userDataBackup":{{"lastModifiedDate":"{2}","deviceName":"jwlibrary-plus","databaseName":"userData.db","schemaVersion":{3}}}}}'.format(
-        now_date, now_date, now_iso, schema_version)
+    j = f"{{\"name\":\"saulotarsobc_{now_date}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"schemaVersion\":{schema_version}}}}}"
     manifest = json.loads(j)
 
-    with open('./data-3/manifest.json', 'w') as f:
+    with open("./data-3/manifest.json", "w") as f:
             json.dump(manifest, f)
 
 
@@ -118,7 +117,37 @@ def getDataFromDb1():
     cur3.executemany("INSERT INTO UserMark VALUES(?,?,?,?,?,?)", UserMark)
     
     BlockRange = cur1.execute("SELECT * FROM BlockRange").fetchall()
-    cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?,?,?)", BlockRange)
+    cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?)", BlockRange)
+    
+    InputField = cur1.execute("SELECT * FROM InputField").fetchall()
+    cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", InputField)
+    
+    LastModified = cur1.execute("SELECT * FROM LastModified").fetchall()
+    cur3.executemany("INSERT INTO LastModified VALUES(?)", LastModified)
+    
+    IndependentMedia = cur1.execute("SELECT * FROM IndependentMedia").fetchall()
+    cur3.executemany("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", IndependentMedia)
+    
+    PlaylistItem = cur1.execute("SELECT * FROM PlaylistItem").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", PlaylistItem)
+    
+    PlaylistItemAccuracy = cur1.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", PlaylistItemAccuracy)
+   
+    PlaylistItemIndependentMediaMap = cur1.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", PlaylistItemIndependentMediaMap)
+   
+    PlaylistItemLocationMap = cur1.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", PlaylistItemLocationMap)
+   
+    PlaylistItemMarker = cur1.execute("SELECT * FROM PlaylistItemMarker").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", PlaylistItemMarker)
+   
+    PlaylistItemMarkerParagraphMap = cur1.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", PlaylistItemMarkerParagraphMap)
+   
+    PlaylistItemMarkerBibleVerseMap = cur1.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", PlaylistItemMarkerBibleVerseMap)
 
     # commit all
     con1.commit()
