@@ -153,6 +153,7 @@ def getDataFromDb1():
     con3.commit()
 
 
+
 def getDataFromDb2():
     con2 = sqlite3.connect("./data-2/userData.db")
     con3 = sqlite3.connect("./data-3/userData.db")
@@ -160,9 +161,117 @@ def getDataFromDb2():
     cur2 = con2.cursor()
     cur3 = con3.cursor()
 
+    # mapped ids
+    mapId = {
+        "Location": {},
+        "Tag": {},
+        "Bookmark": {},
+        "UserMark": {},
+        "Note": {},
+        "PlaylistItem": {},
+        "IndependentMedia": {},
+        "TagMap": {},
+        "PlaylistItemMarker": {},
+    }
+
+    # Location
     data = cur2.execute("SELECT * FROM Location").fetchall()
-    print(data)
-    # cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", data)
+    nextId = cur3.execute("SELECT MAX(LocationId) FROM Location").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['Location'][r[0]] = nextId
+        cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
+
+    # Tag
+    data = cur2.execute("SELECT * FROM Tag").fetchall()
+    nextId = cur3.execute("SELECT MAX(TagId) FROM Tag").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['Tag'][r[0]] = nextId
+        cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2]))
+    
+    # Bookmark
+    data = cur2.execute("SELECT * FROM Bookmark").fetchall()
+    nextId = cur3.execute("SELECT MAX(BookmarkId) FROM Bookmark").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['Bookmark'][r[0]] = nextId
+        cur3.execute("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", (nextId, mapId["Location"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7]))
+    
+    # InputField
+    data = cur2.execute("SELECT * FROM InputField").fetchall()
+    cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", data)
+
+    # UserMark
+    data = cur2.execute("SELECT * FROM UserMark").fetchall()
+    nextId = cur3.execute("SELECT MAX(UserMarkId) FROM UserMark").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['UserMark'][r[0]] = nextId
+        cur3.execute("INSERT INTO UserMark VALUES(?,?,?,?,?)", (nextId, mapId["Location"][r[1]], r[2], r[3], r[4], r[5]))
+   
+    # BlockRange
+    data = cur2.execute("SELECT * FROM BlockRange").fetchall()
+    nextId = cur3.execute("SELECT MAX(BlockRangeId) FROM BlockRange").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['BlockRange'][r[0]] = nextId
+        cur3.execute("INSERT INTO BlockRange VALUES(?,?,?,?,?)", (nextId, r[1], r[2], r[3], mapId["UserMark"][r[4]]))
+    
+    # Note
+    data = cur2.execute("SELECT * FROM Note").fetchall()
+    nextId = cur3.execute("SELECT MAX(NoteId) FROM Note").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['Note'][r[0]] = nextId
+        cur3.execute("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, mapId["UserMark"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
+    
+    # PlaylistItem
+    data = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
+    nextId = cur3.execute("SELECT MAX(PlaylistItemId) FROM PlaylistItem").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['PlaylistItem'][r[0]] = nextId
+        cur3.execute("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6]))
+   
+    # PlaylistItemLocationMap
+    data = cur2.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
+    for r in data:
+        cur3.execute("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", (mapId["PlaylistItem"][r[0]], mapId["Location"][r[1]], r[2], r[3]))
+   
+    # IndependentMedia
+    data = cur2.execute("SELECT * FROM IndependentMedia").fetchall()
+    nextId = cur3.execute("SELECT MAX(IndependentMediaId) FROM IndependentMedia").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['IndependentMedia'][r[0]] = nextId
+        cur3.execute("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4]))
+    
+    # TagMap
+    data = cur2.execute("SELECT * FROM TagMap").fetchall()
+    nextId = cur3.execute("SELECT MAX(TagMapId) FROM TagMap").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['TagMap'][r[0]] = nextId
+        cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], mapId["Tag"][r[4]], r[5]))
+        # TODO: Acima o LocationId sempre e None. Alerta para caso o dado não exista! Vericar dps...
+    
+    # PlaylistItemIndependentMediaMap
+    data = cur2.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
+    for r in data:
+        nextId += 1
+        cur3.execute("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", (mapId["PlaylistItem"][r[0]], mapId["IndependentMedia"][r[1]], r[2]))
+
+    # PlaylistItemMarker
+    data = cur2.execute("SELECT * FROM PlaylistItemMarker").fetchall()
+    nextId = cur3.execute("SELECT MAX(PlaylistItemMarkerId) FROM PlaylistItemMarker").fetchall()[0][0]
+    for r in data:
+        nextId += 1
+        mapId['PlaylistItemMarker'][r[0]] = nextId
+        cur3.execute("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], r[4]))
+   
+    # PlaylistItemAccuracy ???
+    # LastModified ???
 
     # commit all
     con2.commit()
@@ -216,7 +325,7 @@ if __name__ == "__main__":
     # sleep(.2)
     getDataFromDb1()
 
-    print(">> Copiando dados da base-2 para a nova base")
+    print(">> Copiando dados da base-2 para a nova base\n\n")
     # sleep(.2)
     getDataFromDb2()
 
