@@ -167,62 +167,9 @@ def getDataFromDb2():
     cur2 = con2.cursor()
     cur3 = con3.cursor()
 
-    # Location = cur2.execute("SELECT * FROM Location").fetchall()
-    # cur3.executemany("INSERT INTO Location VALUES(null,?,?,?,?,?,?,?,?,?)", Location)
-
-    # query = cur2.execute("SELECT TagId, Type, Name FROM Tag").fetchall()
-    # for i in query:
-    #     cur3.execute("INSERT INTO Tag VALUES(?,?,?)",
-    #                  (f"{i[0]}222", i[1], i[2]))
-
-    # query = cur2.execute(
-    #     "SELECT TagMapId, PlaylistItemId, LocationId, NoteId, TagId, Position FROM TagMap").fetchall()
-    # for i in query:
-    #     print(f"{i[0]}2", i[1], i[2], i[3], f"{i[4]}2", i[5])
-    #     cur3.execute("INSERT INTO TagMapId VALUES(?,?,?,?,?,?)",
-    #                  (f"{i[0]}2", i[1], i[2], i[3], f"{i[4]}2", i[5]))
-
-    # Note = cur2.execute("SELECT * FROM Note").fetchall()
-    # cur3.executemany("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", Note)
-
-    # Bookmark = cur2.execute("SELECT * FROM Bookmark").fetchall()
-    # cur3.executemany("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", Bookmark)
-
-    # UserMark = cur2.execute("SELECT * FROM UserMark").fetchall()
-    # cur3.executemany("INSERT INTO UserMark VALUES(?,?,?,?,?,?)", UserMark)
-
-    # BlockRange = cur2.execute("SELECT * FROM BlockRange").fetchall()
-    # cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?)", BlockRange)
-
-    # InputField = cur2.execute("SELECT * FROM InputField").fetchall()
-    # cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", InputField)
-
-    # LastModified = cur2.execute("SELECT * FROM LastModified").fetchall()
-    # cur3.executemany("INSERT INTO LastModified VALUES(?)", LastModified)
-
-    # IndependentMedia = cur2.execute("SELECT * FROM IndependentMedia").fetchall()
-    # cur3.executemany("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", IndependentMedia)
-
-    # PlaylistItem = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", PlaylistItem)
-
-    # PlaylistItemAccuracy = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", PlaylistItemAccuracy)
-
-    # PlaylistItemIndependentMediaMap = cur2.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", PlaylistItemIndependentMediaMap)
-
-    # PlaylistItemLocationMap = cur2.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", PlaylistItemLocationMap)
-
-    # PlaylistItemMarker = cur2.execute("SELECT * FROM PlaylistItemMarker").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", PlaylistItemMarker)
-
-    # PlaylistItemMarkerParagraphMap = cur2.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", PlaylistItemMarkerParagraphMap)
-
-    # PlaylistItemMarkerBibleVerseMap = cur2.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
-    # cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", PlaylistItemMarkerBibleVerseMap)
+    data = cur1.execute("SELECT * FROM Location").fetchall()
+    print(data)
+    # cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", data)
 
     # commit all
     con2.commit()
@@ -274,7 +221,7 @@ if __name__ == "__main__":
 
     print(">> Copiando dados da base-2 para a nova base")
     # sleep(.2)
-    # getDataFromDb2()
+    getDataFromDb2()
 
     print(">> Criando novo .jwlibrary")
     # sleep(.2)
