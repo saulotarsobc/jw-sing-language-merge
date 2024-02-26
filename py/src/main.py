@@ -22,6 +22,15 @@ def readData1():
         Tags = cursor.fetchall()
         print(Tags)
 
+        data = [
+            ("Monty Python Live at the Hollywood Bowl", 1982, 7.9),
+            ("Monty Python's The Meaning of Life", 1983, 7.5),
+            ("Monty Python's Life of Brian", 1979, 8.0),
+        ]
+        cur.executemany("INSERT INTO movie VALUES(?, ?, ?)", data)
+        # Remember to commit the transaction after executing INSERT.
+        con.commit()
+
 
 def readData2():
     with zipfile.ZipFile(JWFILE2, 'r') as zip_ref:
