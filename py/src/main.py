@@ -68,33 +68,26 @@ def createNewDataBase():
 
     cur = con.cursor()
 
-    cur.execute('CREATE TABLE IF NOT EXISTS Location (LocationId, BookNumber, ChapterNumber, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage, "Type", Title)')
-    cur.execute('CREATE TABLE IF NOT EXISTS Tag (TagId, "Type", Name)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS TagMap (TagMapId, PlaylistItemId, LocationId, NoteId, TagId, "Position")')
+    cur.execute('CREATE TABLE IF NOT EXISTS Location (LocationId, BookNumber, ChapterNumber, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage, Type, Title)')
+    cur.execute('CREATE TABLE IF NOT EXISTS Tag (TagId, Type, Name)')
+    cur.execute('CREATE TABLE IF NOT EXISTS TagMap (TagMapId, PlaylistItemId, LocationId, NoteId, TagId, Position)')
     cur.execute('CREATE TABLE IF NOT EXISTS Note (NoteId, Guid, UserMarkId, LocationId, Title, Content, LastModified, Created, BlockType, BlockIdentifier)')
     cur.execute('CREATE TABLE IF NOT EXISTS Bookmark (BookmarkId, LocationId, PublicationLocationId, Slot, Title, Snippet, BlockType, BlockIdentifier)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS UserMark (UserMarkId, ColorIndex, LocationId, StyleIndex, UserMarkGuid, Version)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS BlockRange (BlockRangeId, BlockType, Identifier, StartToken, EndToken, UserMarkId)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS InputField (LocationId, TextTag, Value)')
+    cur.execute('CREATE TABLE IF NOT EXISTS UserMark (UserMarkId, ColorIndex, LocationId, StyleIndex, UserMarkGuid, Version)')
+    cur.execute('CREATE TABLE IF NOT EXISTS BlockRange (BlockRangeId, BlockType, Identifier, StartToken, EndToken, UserMarkId)')
+    cur.execute('CREATE TABLE IF NOT EXISTS InputField (LocationId, TextTag, Value)')
     cur.execute('CREATE TABLE IF NOT EXISTS LastModified (LastModified)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS IndependentMedia (IndependentMediaId, OriginalFilename, FilePath, MimeType, Hash)')
+    cur.execute('CREATE TABLE IF NOT EXISTS IndependentMedia (IndependentMediaId, OriginalFilename, FilePath, MimeType, Hash)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItem (PlaylistItemId, Label, StartTrimOffsetTicks, EndTrimOffsetTicks, Accuracy, EndAction, ThumbnailFilePath)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS PlaylistItemAccuracy (PlaylistItemAccuracyId, Description)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS PlaylistItemIndependentMediaMap (PlaylistItemId, IndependentMediaId, DurationTicks)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemAccuracy (PlaylistItemAccuracyId, Description)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemIndependentMediaMap (PlaylistItemId, IndependentMediaId, DurationTicks)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemLocationMap (PlaylistItemId, LocationId, MajorMultimediaType, BaseDurationTicks)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarker (PlaylistItemMarkerId, PlaylistItemId, Label, StartTimeTicks, DurationTicks, EndTransitionDurationTicks)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarkerParagraphMap (PlaylistItemMarkerId, MepsDocumentId, ParagraphIndex, MarkerIndexWithinParagraph)')
-    cur.execute(
-        'CREATE TABLE IF NOT EXISTS PlaylistItemMarkerBibleVerseMap (PlaylistItemMarkerId, VerseId)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarkerBibleVerseMap (PlaylistItemMarkerId, VerseId)')
 
     con.commit()
+    con.close()
 
 
 def getDataFromDb1():
