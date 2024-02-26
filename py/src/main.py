@@ -1,6 +1,8 @@
 import sqlite3
 import zipfile
 
+con = sqlite3.connect("data-3/userData.db")
+
 JWFILE1 = "files/bkp1.jwlibrary"
 JWFILE2 = "files/bkp2.jwlibrary"
 
