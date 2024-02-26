@@ -308,45 +308,45 @@ if __name__ == "__main__":
     clearDir("./data-3")
 
     print(">> Descopactando bkp 1 e compiando seus arquivos para data-1")
-    # sleep(.2)
+    sleep(.2)
     readData1()
 
     print(">> Descopactando bkp 2 e compiando seus arquivos para data-2")
-    # sleep(.2)
+    sleep(.2)
     readData2()
 
     print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
-    # sleep(.2)
+    sleep(.2)
     copyAllFilesToData3()
 
     print(">> Copiando default_thumbnail.png para /data-3")
-    # sleep(.2)
+    sleep(.2)
     copyThumbNail()
 
     print(">> Criando e copiando manifest.json para /data-3")
-    # sleep(.2)
+    sleep(.2)
     manifestGenerator()
 
     print(">> Criando nova base de dados")
-    # sleep(.2)
+    sleep(.2)
     createNewDataBase()
 
     print(">> Copiando dados da base-1 para a nova base")
-    # sleep(.2)
+    sleep(.2)
     getDataFromDb1()
 
     print(">> Copiando dados da base-2 para a nova base\n\n")
-    # sleep(.2)
+    sleep(.2)
     getDataFromDb2()
 
     print(">> Criando novo .jwlibrary")
-    # sleep(.2)
+    sleep(.2)
     createNewBkpFIle()
 
     print('>> Limpando pastas...')
-    # sleep(.2)
-    # clearDir("./data-1")
-    # clearDir("./data-2")
-    # clearDir("./data-3")
+    sleep(.2)
+    clearDir("./data-1")
+    clearDir("./data-2")
+    clearDir("./data-3")
 
     print('\n<<< FIM >>>')
