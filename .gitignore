@@ -1,6 +1,6 @@
 node_modules
 .venv
 .env
-/py/data-1/**
-/py/data-2/**
-/py/data-3/**
+**/data-1/**
+**/data-2/**
+**/data-3/**
