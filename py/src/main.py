@@ -99,30 +99,26 @@ def getDataFromDb1():
     cur2 = con2.cursor()
     cur3 = con3.cursor()
 
-    Location = cur1.execute(
-        "SELECT * FROM Location").fetchall()
-    cur3.executemany(
-        "INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", Location)
+    Location = cur1.execute("SELECT * FROM Location").fetchall()
+    cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", Location)
    
-    Tag = cur1.execute(
-        "SELECT * FROM Tag").fetchall()
-    cur3.executemany(
-        "INSERT INTO Tag VALUES(?,?,?)", Tag)
+    Tag = cur1.execute("SELECT * FROM Tag").fetchall()
+    cur3.executemany("INSERT INTO Tag VALUES(?,?,?)", Tag)
   
-    TagMap = cur1.execute(
-        "SELECT * FROM TagMap").fetchall()
-    cur3.executemany(
-        "INSERT INTO TagMap VALUES(?,?,?,?,?,?)", TagMap)
+    TagMap = cur1.execute("SELECT * FROM TagMap").fetchall()
+    cur3.executemany("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", TagMap)
    
-    Note = cur1.execute(
-        "SELECT * FROM Note").fetchall()
-    cur3.executemany(
-        "INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", Note)
+    Note = cur1.execute("SELECT * FROM Note").fetchall()
+    cur3.executemany("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", Note)
    
-    Bookmark = cur1.execute(
-        "SELECT * FROM Bookmark").fetchall()
-    cur3.executemany(
-        "INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", Bookmark)
+    Bookmark = cur1.execute("SELECT * FROM Bookmark").fetchall()
+    cur3.executemany("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", Bookmark)
+    
+    UserMark = cur1.execute("SELECT * FROM UserMark").fetchall()
+    cur3.executemany("INSERT INTO UserMark VALUES(?,?,?,?,?,?)", UserMark)
+    
+    BlockRange = cur1.execute("SELECT * FROM BlockRange").fetchall()
+    cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?,?,?)", BlockRange)
 
     # commit all
     con1.commit()
