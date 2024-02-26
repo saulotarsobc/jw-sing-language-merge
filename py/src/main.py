@@ -37,4 +37,4 @@ def readData2():
 
 if __name__ == "__main__":
     readData1()
-    # readData2()
+    readData2()
