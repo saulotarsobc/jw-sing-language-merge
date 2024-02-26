@@ -60,97 +60,187 @@ def manifestGenerator():
     manifest = json.loads(j)
 
     with open("./data-3/manifest.json", "w") as f:
-            json.dump(manifest, f)
+        json.dump(manifest, f)
 
 
 def createNewDataBase():
     con = sqlite3.connect("./data-3/userData.db")
-    
+
     cur = con.cursor()
-    
+
     cur.execute('CREATE TABLE IF NOT EXISTS Location (LocationId, BookNumber, ChapterNumber, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage, "Type", Title)')
     cur.execute('CREATE TABLE IF NOT EXISTS Tag (TagId, "Type", Name)')
-    cur.execute('CREATE TABLE IF NOT EXISTS TagMap (TagMapId, PlaylistItemId, LocationId, NoteId, TagId, "Position")')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS TagMap (TagMapId, PlaylistItemId, LocationId, NoteId, TagId, "Position")')
     cur.execute('CREATE TABLE IF NOT EXISTS Note (NoteId, Guid, UserMarkId, LocationId, Title, Content, LastModified, Created, BlockType, BlockIdentifier)')
     cur.execute('CREATE TABLE IF NOT EXISTS Bookmark (BookmarkId, LocationId, PublicationLocationId, Slot, Title, Snippet, BlockType, BlockIdentifier)')
-    cur.execute('CREATE TABLE IF NOT EXISTS UserMark (UserMarkId, ColorIndex, LocationId, StyleIndex, UserMarkGuid, Version)')
-    cur.execute('CREATE TABLE IF NOT EXISTS BlockRange (BlockRangeId, BlockType, Identifier, StartToken, EndToken, UserMarkId)')
-    cur.execute('CREATE TABLE IF NOT EXISTS InputField (LocationId, TextTag, Value)')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS UserMark (UserMarkId, ColorIndex, LocationId, StyleIndex, UserMarkGuid, Version)')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS BlockRange (BlockRangeId, BlockType, Identifier, StartToken, EndToken, UserMarkId)')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS InputField (LocationId, TextTag, Value)')
     cur.execute('CREATE TABLE IF NOT EXISTS LastModified (LastModified)')
-    cur.execute('CREATE TABLE IF NOT EXISTS IndependentMedia (IndependentMediaId, OriginalFilename, FilePath, MimeType, Hash)')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS IndependentMedia (IndependentMediaId, OriginalFilename, FilePath, MimeType, Hash)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItem (PlaylistItemId, Label, StartTrimOffsetTicks, EndTrimOffsetTicks, Accuracy, EndAction, ThumbnailFilePath)')
-    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemAccuracy (PlaylistItemAccuracyId, Description)')
-    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemIndependentMediaMap (PlaylistItemId, IndependentMediaId, DurationTicks)')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS PlaylistItemAccuracy (PlaylistItemAccuracyId, Description)')
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS PlaylistItemIndependentMediaMap (PlaylistItemId, IndependentMediaId, DurationTicks)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemLocationMap (PlaylistItemId, LocationId, MajorMultimediaType, BaseDurationTicks)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarker (PlaylistItemMarkerId, PlaylistItemId, Label, StartTimeTicks, DurationTicks, EndTransitionDurationTicks)')
     cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarkerParagraphMap (PlaylistItemMarkerId, MepsDocumentId, ParagraphIndex, MarkerIndexWithinParagraph)')
-    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarkerBibleVerseMap (PlaylistItemMarkerId, VerseId)')
-    
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS PlaylistItemMarkerBibleVerseMap (PlaylistItemMarkerId, VerseId)')
+
     con.commit()
 
 
 def getDataFromDb1():
     con1 = sqlite3.connect("./data-1/userData.db")
-    con2 = sqlite3.connect("./data-2/userData.db")
     con3 = sqlite3.connect("./data-3/userData.db")
 
     cur1 = con1.cursor()
-    cur2 = con2.cursor()
     cur3 = con3.cursor()
 
     Location = cur1.execute("SELECT * FROM Location").fetchall()
-    cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", Location)
-   
+    cur3.executemany(
+        "INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", Location)
+
     Tag = cur1.execute("SELECT * FROM Tag").fetchall()
     cur3.executemany("INSERT INTO Tag VALUES(?,?,?)", Tag)
-  
+
     TagMap = cur1.execute("SELECT * FROM TagMap").fetchall()
     cur3.executemany("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", TagMap)
-   
+
     Note = cur1.execute("SELECT * FROM Note").fetchall()
     cur3.executemany("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", Note)
-   
+
     Bookmark = cur1.execute("SELECT * FROM Bookmark").fetchall()
     cur3.executemany("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", Bookmark)
-    
+
     UserMark = cur1.execute("SELECT * FROM UserMark").fetchall()
     cur3.executemany("INSERT INTO UserMark VALUES(?,?,?,?,?,?)", UserMark)
-    
+
     BlockRange = cur1.execute("SELECT * FROM BlockRange").fetchall()
     cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?)", BlockRange)
-    
+
     InputField = cur1.execute("SELECT * FROM InputField").fetchall()
     cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", InputField)
-    
+
     LastModified = cur1.execute("SELECT * FROM LastModified").fetchall()
     cur3.executemany("INSERT INTO LastModified VALUES(?)", LastModified)
-    
-    IndependentMedia = cur1.execute("SELECT * FROM IndependentMedia").fetchall()
-    cur3.executemany("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", IndependentMedia)
-    
+
+    IndependentMedia = cur1.execute(
+        "SELECT * FROM IndependentMedia").fetchall()
+    cur3.executemany(
+        "INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", IndependentMedia)
+
     PlaylistItem = cur1.execute("SELECT * FROM PlaylistItem").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", PlaylistItem)
-    
-    PlaylistItemAccuracy = cur1.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", PlaylistItemAccuracy)
-   
-    PlaylistItemIndependentMediaMap = cur1.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", PlaylistItemIndependentMediaMap)
-   
-    PlaylistItemLocationMap = cur1.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", PlaylistItemLocationMap)
-   
-    PlaylistItemMarker = cur1.execute("SELECT * FROM PlaylistItemMarker").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", PlaylistItemMarker)
-   
-    PlaylistItemMarkerParagraphMap = cur1.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", PlaylistItemMarkerParagraphMap)
-   
-    PlaylistItemMarkerBibleVerseMap = cur1.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", PlaylistItemMarkerBibleVerseMap)
+    cur3.executemany(
+        "INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", PlaylistItem)
+
+    PlaylistItemAccuracy = cur1.execute(
+        "SELECT * FROM PlaylistItemAccuracy").fetchall()
+    cur3.executemany(
+        "INSERT INTO PlaylistItemAccuracy VALUES(?,?)", PlaylistItemAccuracy)
+
+    PlaylistItemIndependentMediaMap = cur1.execute(
+        "SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)",
+                     PlaylistItemIndependentMediaMap)
+
+    PlaylistItemLocationMap = cur1.execute(
+        "SELECT * FROM PlaylistItemLocationMap").fetchall()
+    cur3.executemany(
+        "INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", PlaylistItemLocationMap)
+
+    PlaylistItemMarker = cur1.execute(
+        "SELECT * FROM PlaylistItemMarker").fetchall()
+    cur3.executemany(
+        "INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", PlaylistItemMarker)
+
+    PlaylistItemMarkerParagraphMap = cur1.execute(
+        "SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)",
+                     PlaylistItemMarkerParagraphMap)
+
+    PlaylistItemMarkerBibleVerseMap = cur1.execute(
+        "SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
+    cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)",
+                     PlaylistItemMarkerBibleVerseMap)
 
     # commit all
     con1.commit()
+    con3.commit()
+
+
+def getDataFromDb2():
+    con2 = sqlite3.connect("./data-2/userData.db")
+    con3 = sqlite3.connect("./data-3/userData.db")
+
+    cur2 = con2.cursor()
+    cur3 = con3.cursor()
+
+    # Location = cur2.execute("SELECT * FROM Location").fetchall()
+    # cur3.executemany("INSERT INTO Location VALUES(null,?,?,?,?,?,?,?,?,?)", Location)
+
+    # query = cur2.execute("SELECT TagId, Type, Name FROM Tag").fetchall()
+    # for i in query:
+    #     cur3.execute("INSERT INTO Tag VALUES(?,?,?)",
+    #                  (f"{i[0]}222", i[1], i[2]))
+
+    # query = cur2.execute(
+    #     "SELECT TagMapId, PlaylistItemId, LocationId, NoteId, TagId, Position FROM TagMap").fetchall()
+    # for i in query:
+    #     print(f"{i[0]}2", i[1], i[2], i[3], f"{i[4]}2", i[5])
+    #     cur3.execute("INSERT INTO TagMapId VALUES(?,?,?,?,?,?)",
+    #                  (f"{i[0]}2", i[1], i[2], i[3], f"{i[4]}2", i[5]))
+
+    # Note = cur2.execute("SELECT * FROM Note").fetchall()
+    # cur3.executemany("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", Note)
+
+    # Bookmark = cur2.execute("SELECT * FROM Bookmark").fetchall()
+    # cur3.executemany("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", Bookmark)
+
+    # UserMark = cur2.execute("SELECT * FROM UserMark").fetchall()
+    # cur3.executemany("INSERT INTO UserMark VALUES(?,?,?,?,?,?)", UserMark)
+
+    # BlockRange = cur2.execute("SELECT * FROM BlockRange").fetchall()
+    # cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?)", BlockRange)
+
+    # InputField = cur2.execute("SELECT * FROM InputField").fetchall()
+    # cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", InputField)
+
+    # LastModified = cur2.execute("SELECT * FROM LastModified").fetchall()
+    # cur3.executemany("INSERT INTO LastModified VALUES(?)", LastModified)
+
+    # IndependentMedia = cur2.execute("SELECT * FROM IndependentMedia").fetchall()
+    # cur3.executemany("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", IndependentMedia)
+
+    # PlaylistItem = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", PlaylistItem)
+
+    # PlaylistItemAccuracy = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", PlaylistItemAccuracy)
+
+    # PlaylistItemIndependentMediaMap = cur2.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", PlaylistItemIndependentMediaMap)
+
+    # PlaylistItemLocationMap = cur2.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", PlaylistItemLocationMap)
+
+    # PlaylistItemMarker = cur2.execute("SELECT * FROM PlaylistItemMarker").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", PlaylistItemMarker)
+
+    # PlaylistItemMarkerParagraphMap = cur2.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", PlaylistItemMarkerParagraphMap)
+
+    # PlaylistItemMarkerBibleVerseMap = cur2.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
+    # cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", PlaylistItemMarkerBibleVerseMap)
+
+    # commit all
     con2.commit()
     con3.commit()
 
@@ -163,17 +253,18 @@ def createNewBkpFIle():
 
     zf.close()
 
+
 if __name__ == "__main__":
     print('<<< Iniciando...>>>\n\n>> Limpando pastas...')
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
 
-    print(">> Lendo bkp 1")
+    print(">> Descopactando bkp 1 e compiando seus arquivos para data-1")
     # sleep(.2)
     readData1()
 
-    print(">> Lendo bkp 2")
+    print(">> Descopactando bkp 2 e compiando seus arquivos para data-2")
     # sleep(.2)
     readData2()
 
@@ -197,14 +288,18 @@ if __name__ == "__main__":
     # sleep(.2)
     getDataFromDb1()
 
+    print(">> Copiando dados da base-2 para a nova base")
+    # sleep(.2)
+    # getDataFromDb2()
+
     print(">> Criando novo .jwlibrary")
     # sleep(.2)
     createNewBkpFIle()
 
     print('>> Limpando pastas...')
     # sleep(.2)
-    clearDir("./data-1")
-    clearDir("./data-2")
-    clearDir("./data-3")
+    # clearDir("./data-1")
+    # clearDir("./data-2")
+    # clearDir("./data-3")
 
     print('\n<<< FIM >>>')
