@@ -38,8 +38,8 @@ def copyAllFilesToData3():
             shutil.copy(f"./data-1/{file}", f"./data-3/{file}")
 
     for file in os.listdir("./data-2"):
-        # if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-        shutil.copy(f"./data-2/{file}", f"./data-3/{file}")
+        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
+            shutil.copy(f"./data-2/{file}", f"./data-3/{file}")
 
 
 def copyThumbNail():
@@ -60,7 +60,74 @@ def manifestGenerator():
         now_date, now_date, now_iso, schema_version)
     manifest = json.loads(j)
 
-    print(manifest)
+    with open('./data-3/manifest.json', 'w') as f:
+            json.dump(manifest, f)
+
+
+def createNewDataBase():
+    con = sqlite3.connect("./data-3/userData.db")
+    
+    cur = con.cursor()
+    
+    cur.execute('CREATE TABLE IF NOT EXISTS Location (LocationId, BookNumber, ChapterNumber, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage, "Type", Title)')
+    cur.execute('CREATE TABLE IF NOT EXISTS Tag (TagId, "Type", Name)')
+    cur.execute('CREATE TABLE IF NOT EXISTS TagMap (TagMapId, PlaylistItemId, LocationId, NoteId, TagId, "Position")')
+    cur.execute('CREATE TABLE IF NOT EXISTS Note (NoteId, Guid, UserMarkId, LocationId, Title, Content, LastModified, Created, BlockType, BlockIdentifier)')
+    cur.execute('CREATE TABLE IF NOT EXISTS Bookmark (BookmarkId, LocationId, PublicationLocationId, Slot, Title, Snippet, BlockType, BlockIdentifier)')
+    cur.execute('CREATE TABLE IF NOT EXISTS UserMark (UserMarkId, ColorIndex, LocationId, StyleIndex, UserMarkGuid, Version)')
+    cur.execute('CREATE TABLE IF NOT EXISTS BlockRange (BlockRangeId, BlockType, Identifier, StartToken, EndToken, UserMarkId)')
+    cur.execute('CREATE TABLE IF NOT EXISTS InputField (LocationId, TextTag, Value)')
+    cur.execute('CREATE TABLE IF NOT EXISTS LastModified (LastModified)')
+    cur.execute('CREATE TABLE IF NOT EXISTS IndependentMedia (IndependentMediaId, OriginalFilename, FilePath, MimeType, Hash)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItem (PlaylistItemId, Label, StartTrimOffsetTicks, EndTrimOffsetTicks, Accuracy, EndAction, ThumbnailFilePath)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemAccuracy (PlaylistItemAccuracyId, Description)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemIndependentMediaMap (PlaylistItemId, IndependentMediaId, DurationTicks)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemLocationMap (PlaylistItemId, LocationId, MajorMultimediaType, BaseDurationTicks)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarker (PlaylistItemMarkerId, PlaylistItemId, Label, StartTimeTicks, DurationTicks, EndTransitionDurationTicks)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarkerParagraphMap (PlaylistItemMarkerId, MepsDocumentId, ParagraphIndex, MarkerIndexWithinParagraph)')
+    cur.execute('CREATE TABLE IF NOT EXISTS PlaylistItemMarkerBibleVerseMap (PlaylistItemMarkerId, VerseId)')
+    
+    con.commit()
+
+
+def getDataFromDb1():
+    con1 = sqlite3.connect("./data-1/userData.db")
+    con2 = sqlite3.connect("./data-2/userData.db")
+    con3 = sqlite3.connect("./data-3/userData.db")
+
+    cur1 = con1.cursor()
+    cur2 = con2.cursor()
+    cur3 = con3.cursor()
+
+    Location = cur1.execute(
+        "SELECT * FROM Location").fetchall()
+    cur3.executemany(
+        "INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", Location)
+   
+    Tag = cur1.execute(
+        "SELECT * FROM Tag").fetchall()
+    cur3.executemany(
+        "INSERT INTO Tag VALUES(?,?,?)", Tag)
+  
+    TagMap = cur1.execute(
+        "SELECT * FROM TagMap").fetchall()
+    cur3.executemany(
+        "INSERT INTO TagMap VALUES(?,?,?,?,?,?)", TagMap)
+   
+    Note = cur1.execute(
+        "SELECT * FROM Note").fetchall()
+    cur3.executemany(
+        "INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", Note)
+   
+    Bookmark = cur1.execute(
+        "SELECT * FROM Bookmark").fetchall()
+    cur3.executemany(
+        "INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", Bookmark)
+
+    # commit all
+    con1.commit()
+    con2.commit()
+    con3.commit()
 
 
 def createNewBkpFIle():
@@ -71,15 +138,8 @@ def createNewBkpFIle():
 
     zf.close()
 
-
-def db3():
-    con = sqlite3.connect("./data-3/userData.db")
-    cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS Tag(TagId, Type, Name)")
-
-
 if __name__ == "__main__":
-    print('>> Limpando pastas...')
+    print('<<< Iniciando...>>>\n\n>> Limpando pastas...')
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
@@ -92,7 +152,7 @@ if __name__ == "__main__":
     # sleep(.2)
     readData2()
 
-    print(">> Copiando todos os arquivos para /data-3")
+    print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
     # sleep(.2)
     copyAllFilesToData3()
 
@@ -104,14 +164,22 @@ if __name__ == "__main__":
     # sleep(.2)
     manifestGenerator()
 
+    print(">> Criando nova base de dados")
+    # sleep(.2)
+    createNewDataBase()
+
+    print(">> Copiando dados da base-1 para a nova base")
+    # sleep(.2)
+    getDataFromDb1()
+
     print(">> Criando novo .jwlibrary")
     # sleep(.2)
     createNewBkpFIle()
 
-    # print('>> Limpando pastas...')
-    sleep(.2)
-    # clearDir("./data-1")
-    # clearDir("./data-2")
-    # clearDir("./data-3")
+    print('>> Limpando pastas...')
+    # sleep(.2)
+    clearDir("./data-1")
+    clearDir("./data-2")
+    clearDir("./data-3")
 
-    print('<<< FIM >>>')
+    print('\n<<< FIM >>>')
