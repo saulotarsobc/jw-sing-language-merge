@@ -1,34 +1,25 @@
 import sqlite3
 import zipfile
 
-jwfile1 = "files/bkp1.jwlibrary"
-jwfile2 = "files/bkp2.jwlibrary"
+JWFILE1 = "files/bkp1.jwlibrary"
+JWFILE2 = "files/bkp2.jwlibrary"
 
 # descompactar bkp1
-with zipfile.ZipFile(jwfile1, 'r') as zip_ref:
-    files = zip_ref.namelist()
-    zip_ref.extractall("./data-1")
-
-    # uploadedDb = "./data-1/{0}".format([zipname for zipname in files if zipname.endswith(".db")][0])
-    uploadedDb = "./data-1/userData.db"
-
-    connection = sqlite3.connect(uploadedDb)
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM Tag")
-    Tags = cursor.fetchall()[0][0]
-    print(Tags)
 
 
-# # descompactar bkp2
-# with zipfile.ZipFile(jwfile2, 'r') as zip_ref:
-#     files = zip_ref.namelist()
-#     zip_ref.extractall("./data-2")
+def readData1():
+    with zipfile.ZipFile(JWFILE1, 'r') as zip_ref:
+        files = zip_ref.namelist()
+        zip_ref.extractall("./data-1")
 
-#     # uploadedDb = "./data-2/{0}".format([zipname for zipname in files if zipname.endswith(".db")][0])
-#     uploadedDb = "./data-2/userData.db"
+        uploadedDb = "./data-1/userData.db"
 
-#     connection = sqlite3.connect(uploadedDb)
-#     cursor = connection.cursor()
-#     cursor.execute("SELECT Count(*) FROM Tag")
-#     totoalTags = cursor.fetchall()[0][0]
-#     print(f"Total de tags: {totoalTags}")
+        connection = sqlite3.connect(uploadedDb)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Tag")
+        Tags = cursor.fetchall()
+        print(Tags)
+
+
+if __name__ == "__main__":
+    readData1()
