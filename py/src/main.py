@@ -21,5 +21,20 @@ def readData1():
         print(Tags)
 
 
+def readData2():
+    with zipfile.ZipFile(JWFILE2, 'r') as zip_ref:
+        files = zip_ref.namelist()
+        zip_ref.extractall("./data-2")
+
+        uploadedDb = "./data-2/userData.db"
+
+        connection = sqlite3.connect(uploadedDb)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Tag")
+        Tags = cursor.fetchall()
+        print(Tags)
+
+
 if __name__ == "__main__":
     readData1()
+    # readData2()
