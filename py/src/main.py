@@ -345,8 +345,8 @@ if __name__ == "__main__":
 
     print('>> Limpando pastas...')
     sleep(.2)
-    clearDir("./data-1")
-    clearDir("./data-2")
-    clearDir("./data-3")
+    # clearDir("./data-1")
+    # clearDir("./data-2")
+    # clearDir("./data-3")
 
     print('\n<<< FIM >>>')

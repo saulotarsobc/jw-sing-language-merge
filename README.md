@@ -21,4 +21,4 @@
 - ✅ PlaylistItemLocationMap
 - ✅ PlaylistItemMarker
 - ✅ PlaylistItemMarkerParagraphMap
-- 🟥 PlaylistItemMarkerBibleVerseMap
+- ✅ PlaylistItemMarkerBibleVerseMap
