@@ -1,51 +1,59 @@
+import os
 import sqlite3
 import zipfile
+import shutil
+from time import sleep
 
-con = sqlite3.connect("data-3/userData.db")
 
 JWFILE1 = "files/bkp1.jwlibrary"
 JWFILE2 = "files/bkp2.jwlibrary"
 
-# descompactar bkp1
+
+os.makedirs("./data-3", exist_ok=True)
+
+for file in os.listdir("./data-3"):
+    os.remove(f"./data-3/{file}")
 
 
 def readData1():
-    with zipfile.ZipFile(JWFILE1, 'r') as zip_ref:
+    with zipfile.ZipFile(JWFILE1, "r") as zip_ref:
         files = zip_ref.namelist()
         zip_ref.extractall("./data-1")
 
-        uploadedDb = "./data-1/userData.db"
-
-        connection = sqlite3.connect(uploadedDb)
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM Tag")
-        Tags = cursor.fetchall()
-        print(Tags)
-
-        data = [
-            ("Monty Python Live at the Hollywood Bowl", 1982, 7.9),
-            ("Monty Python's The Meaning of Life", 1983, 7.5),
-            ("Monty Python's Life of Brian", 1979, 8.0),
-        ]
-        cur.executemany("INSERT INTO movie VALUES(?, ?, ?)", data)
-        # Remember to commit the transaction after executing INSERT.
-        con.commit()
-
 
 def readData2():
-    with zipfile.ZipFile(JWFILE2, 'r') as zip_ref:
+    with zipfile.ZipFile(JWFILE2, "r") as zip_ref:
         files = zip_ref.namelist()
         zip_ref.extractall("./data-2")
 
-        uploadedDb = "./data-2/userData.db"
 
-        connection = sqlite3.connect(uploadedDb)
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM Tag")
-        Tags = cursor.fetchall()
-        print(Tags)
+def copyAllFilesToData3():
+    for file in os.listdir("./data-1"):
+        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
+            shutil.copy(f"./data-1/{file}", f"./data-3/{file}")
+
+    for file in os.listdir("./data-2"):
+        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
+            shutil.copy(f"./data-2/{file}", f"./data-3/{file}")
+
+
+def db3():
+    con = sqlite3.connect("./data-3/userData.db")
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS Tag(TagId, Type, Name)")
 
 
 if __name__ == "__main__":
+    print("Lendo bkp 1")
+    sleep(1)
     readData1()
+
+    print("Lendo bkp 2")
+    sleep(1)
     readData2()
+
+    print("Copiando todos os arquivos para /data-3")
+    sleep(1)
+    copyAllFilesToData3()
+
+    print('<<< FIM >>>')
