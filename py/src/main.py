@@ -268,7 +268,17 @@ def getDataFromDb2():
     for r in data:
         nextId += 1
         mapId['PlaylistItemMarker'][r[0]] = nextId
-        cur3.execute("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], r[4]))
+        cur3.execute("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], r[4], r[5]))
+   
+    # PlaylistItemMarkerParagraphMap
+    data = cur2.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
+    for r in data:
+        cur3.execute("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", (mapId["PlaylistItemMarker"][r[1]], r[2], r[3]))
+   
+    # PlaylistItemMarkerBibleVerseMap
+    data = cur2.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
+    for r in data:
+        cur3.execute("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", (mapId["PlaylistItemMarker"][r[0]], r[1]))
    
     # PlaylistItemAccuracy ???
     # LastModified ???

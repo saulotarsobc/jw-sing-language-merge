@@ -19,6 +19,6 @@
 - 🟥 PlaylistItemAccuracy
 - ✅ PlaylistItemIndependentMediaMap
 - ✅ PlaylistItemLocationMap
-- 🟥 PlaylistItemMarker
-- 🟥 PlaylistItemMarkerParagraphMap
+- ✅ PlaylistItemMarker
+- ✅ PlaylistItemMarkerParagraphMap
 - 🟥 PlaylistItemMarkerBibleVerseMap
