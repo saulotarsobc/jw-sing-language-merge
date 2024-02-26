@@ -138,22 +138,22 @@ def getDataFromDb1():
     cur3.executemany("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", data)
 
     data = cur1.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", datadata)
+    cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", data)
 
     data = cur1.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", datadata)
+    cur3.executemany("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", data)
 
     data = cur1.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", datadata)
+    cur3.executemany("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", data)
 
     data = cur1.execute("SELECT * FROM PlaylistItemMarker").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", datadata)
+    cur3.executemany("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", data)
 
     data = cur1.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", datadata)
+    cur3.executemany("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", data)
 
     data = cur1.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", datadata)
+    cur3.executemany("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", data)
 
     # commit all
     con1.commit()
