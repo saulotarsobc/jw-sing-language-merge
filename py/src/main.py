@@ -167,7 +167,7 @@ def getDataFromDb2():
     cur2 = con2.cursor()
     cur3 = con3.cursor()
 
-    data = cur1.execute("SELECT * FROM Location").fetchall()
+    data = cur2.execute("SELECT * FROM Location").fetchall()
     print(data)
     # cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", data)
 
