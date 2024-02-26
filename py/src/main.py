@@ -335,7 +335,7 @@ if __name__ == "__main__":
     sleep(.2)
     getDataFromDb1()
 
-    print(">> Copiando dados da base-2 para a nova base\n\n")
+    print(">> Copiando dados da base-2 para a nova base")
     sleep(.2)
     getDataFromDb2()
 
