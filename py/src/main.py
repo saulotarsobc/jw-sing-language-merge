@@ -9,6 +9,7 @@ import json
 
 JWFILE1 = "./bkp1.jwlibrary"
 JWFILE2 = "./bkp2.jwlibrary"
+FINALFILENAME = ""
 
 
 os.makedirs("./data-3", exist_ok=True)
@@ -55,7 +56,10 @@ def manifestGenerator():
     now_utc_iso = now_utc.isoformat("T", "seconds").replace("+00:00", "Z")
     schema_version = 11
 
-    j = f"{{\"name\":\"saulotarsobc_{now_date}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"schemaVersion\":{schema_version}}}}}"
+    global FINALFILENAME
+    FINALFILENAME = f"UserdataBackup_{now_date}_oluas.jwlibrary"
+
+    j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"🚀 saulotarsobc\",\"databaseName\":\"userData.db\",\"schemaVersion\":{schema_version}}}}}"
     manifest = json.loads(j)
 
     with open("./data-3/manifest.json", "w") as f:
@@ -823,8 +827,7 @@ def getDataFromDb2():
 
 
 def createNewBkpFIle():
-    zf = zipfile.ZipFile('./merged.jwlibrary', "w", compression=zipfile.ZIP_DEFLATED)
-    
+    zf = zipfile.ZipFile( FINALFILENAME, "w", compression=zipfile.ZIP_DEFLATED)
     for file in os.listdir('./data-3'):
         zf.write(f"./data-3/{file}", arcname=file)
 
@@ -832,7 +835,8 @@ def createNewBkpFIle():
 
 
 if __name__ == "__main__":
-    print('<<< Iniciando...>>>\n\n>> Limpando pastas...')
+    print("<<< Iniciando...>>>")
+    print(">> Limpando pastas...")
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
@@ -864,9 +868,9 @@ if __name__ == "__main__":
     print(">> Criando novo .jwlibrary")
     createNewBkpFIle()
 
-    print('>> Limpando pastas...')
+    print(">> Limpando pastas...")
     clearDir("./data-1")
     clearDir("./data-2")
-    # clearDir("./data-3")
+    clearDir("./data-3")
 
-    print('\n<<< FIM >>>')
+    print("\n<<< FIM >>>")
