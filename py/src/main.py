@@ -7,8 +7,8 @@ import pytz
 import json
 
 
-JWFILE1 = "files/bkp1.jwlibrary"
-JWFILE2 = "files/bkp2.jwlibrary"
+JWFILE1 = "./bkp1.jwlibrary"
+JWFILE2 = "./bkp2.jwlibrary"
 
 
 os.makedirs("./data-3", exist_ok=True)
