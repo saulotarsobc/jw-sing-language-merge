@@ -7,6 +7,22 @@
 
 ## Python
 
+### Use in python
+
+```sh
+git clone https://github.com/saulotarsobc/jw-sing-language-merge.git
+cd jw-sing-language-merge/py
+python3 -m venv .venv
+
+source .venv/Scripts/activate # windows
+# .venv
+pip install -r requirements.txt # to pip update -> 'python.exe -m pip install --upgrade pip'
+# .venv
+python src/main.py;
+```
+
+## Tables
+
 - ✅ Location
 - ✅ Tag
 - ✅ TagMap
