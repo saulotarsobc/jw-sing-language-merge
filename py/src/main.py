@@ -68,8 +68,7 @@ def createNewDataBase():
     cur = con.cursor()
 
     # Create tables
-    cur.executescript('''-- IndependentMedia definition
-        CREATE TABLE
+    cur.executescript('''CREATE TABLE -- IndependentMedia definition
             IndependentMedia (
                 IndependentMediaId INTEGER NOT NULL PRIMARY KEY,
                 OriginalFilename TEXT NOT NULL,
@@ -439,217 +438,160 @@ def createNewDataBase():
             );
 
         CREATE INDEX IX_TagMap_TagId ON TagMap (TagId);
-
         CREATE INDEX IX_TagMap_PlaylistItemId_TagId_Position ON TagMap (PlaylistItemId, TagId, Position);
-
         CREATE INDEX IX_TagMap_LocationId_TagId_Position ON TagMap (LocationId, TagId, Position);
-
-        CREATE INDEX IX_TagMap_NoteId_TagId_Position ON TagMap (NoteId, TagId, Position);''')
+        CREATE INDEX IX_TagMap_NoteId_TagId_Position ON TagMap (NoteId, TagId, Position);
+    ''')
 
     # Create trigers
     cur.executescript('''CREATE TRIGGER TR_Update_LastModified_Delete_Tag DELETE ON Tag BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_Tag INSERT ON Tag BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_Tag
         UPDATE ON Tag BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_TagMap DELETE ON TagMap BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_TagMap INSERT ON TagMap BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_TagMap
         UPDATE ON TagMap BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_Note DELETE ON Note BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_Note INSERT ON Note BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_Note
         UPDATE ON Note BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_Bookmark DELETE ON Bookmark BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_Bookmark INSERT ON Bookmark BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_Bookmark
         UPDATE ON Bookmark BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_UserMark DELETE ON UserMark BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_UserMark INSERT ON UserMark BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_UserMark
         UPDATE ON UserMark BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_BlockRange DELETE ON BlockRange BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_BlockRange INSERT ON BlockRange BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_BlockRange
         UPDATE ON BlockRange BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_InputField DELETE ON InputField BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_InputField INSERT ON InputField BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_InputField
         UPDATE ON InputField BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_IndependentMedia DELETE ON IndependentMedia BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_IndependentMedia INSERT ON IndependentMedia BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_IndependentMedia
         UPDATE ON IndependentMedia BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_PlaylistItem DELETE ON PlaylistItem BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_PlaylistItem INSERT ON PlaylistItem BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_PlaylistItem
         UPDATE ON PlaylistItem BEGIN
         UPDATE LastModified
-        SET
-            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
-
+        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
         END;
 
         CREATE TRIGGER TR_Raise_Error_Before_Delete_LastModified BEFORE DELETE ON LastModified BEGIN
-        SELECT
-            RAISE (FAIL, 'DELETE FROM LastModified not allowed');
-
-        END;''')
+        SELECT RAISE (FAIL, 'DELETE FROM LastModified not allowed');
+        END;
+    ''')
 
     con.commit()
     con.close()
@@ -737,6 +679,7 @@ def getDataFromDb2():
         "Bookmark": {},
         "UserMark": {},
         "Note": {},
+        "PlaylistItemAccuracy": {},
         "PlaylistItem": {},
         "IndependentMedia": {},
         "TagMap": {},
@@ -745,7 +688,7 @@ def getDataFromDb2():
 
     # Location
     data = cur2.execute("SELECT * FROM Location").fetchall()
-    nextId = cur2.execute("SELECT MAX(LocationId) FROM Location").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(LocationId) FROM Location").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['Location'][r[0]] = nextId
@@ -753,7 +696,7 @@ def getDataFromDb2():
 
     # Tag
     data = cur2.execute("SELECT * FROM Tag").fetchall()
-    nextId = cur2.execute("SELECT MAX(TagId) FROM Tag").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(TagId) FROM Tag").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['Tag'][r[0]] = nextId
@@ -761,7 +704,7 @@ def getDataFromDb2():
     
     # Bookmark
     data = cur2.execute("SELECT * FROM Bookmark").fetchall()
-    nextId = cur2.execute("SELECT MAX(BookmarkId) FROM Bookmark").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(BookmarkId) FROM Bookmark").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['Bookmark'][r[0]] = nextId
@@ -773,7 +716,7 @@ def getDataFromDb2():
 
     # UserMark
     data = cur2.execute("SELECT * FROM UserMark").fetchall()
-    nextId = cur2.execute("SELECT MAX(UserMarkId) FROM UserMark").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(UserMarkId) FROM UserMark").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['UserMark'][r[0]] = nextId
@@ -781,7 +724,7 @@ def getDataFromDb2():
    
     # BlockRange
     data = cur2.execute("SELECT * FROM BlockRange").fetchall()
-    nextId = cur2.execute("SELECT MAX(BlockRangeId) FROM BlockRange").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(BlockRangeId) FROM BlockRange").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['BlockRange'][r[0]] = nextId
@@ -789,15 +732,25 @@ def getDataFromDb2():
     
     # Note
     data = cur2.execute("SELECT * FROM Note").fetchall()
-    nextId = cur2.execute("SELECT MAX(NoteId) FROM Note").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(NoteId) FROM Note").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['Note'][r[0]] = nextId
         cur3.execute("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, mapId["UserMark"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
-    
+
+    # PlaylistItemAccuracy
+    # data = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
+    # nextId = cur3.execute("SELECT MAX(PlaylistItemAccuracyId) FROM PlaylistItemAccuracy").fetchone()[0]
+    # for r in data:
+    #     nextId += 1
+    #     print(nextId)
+    #     mapId['PlaylistItemAccuracy'][r[0]] = nextId
+    #     cur3.execute("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", (nextId, 'asdasd' + str(nextId)))
+
+
     # PlaylistItem
     data = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
-    nextId = cur2.execute("SELECT MAX(PlaylistItemId) FROM PlaylistItem").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(PlaylistItemId) FROM PlaylistItem").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['PlaylistItem'][r[0]] = nextId
@@ -810,7 +763,7 @@ def getDataFromDb2():
    
     # IndependentMedia
     data = cur2.execute("SELECT * FROM IndependentMedia").fetchall()
-    nextId = cur2.execute("SELECT MAX(IndependentMediaId) FROM IndependentMedia").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(IndependentMediaId) FROM IndependentMedia").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['IndependentMedia'][r[0]] = nextId
@@ -818,12 +771,11 @@ def getDataFromDb2():
     
     # TagMap
     data = cur2.execute("SELECT * FROM TagMap").fetchall()
-    nextId = cur2.execute("SELECT MAX(TagMapId) FROM TagMap").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(TagMapId) FROM TagMap").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['TagMap'][r[0]] = nextId
         cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], mapId["Location"].get(r[2]), mapId["Note"].get(r[3]), mapId["Tag"][r[4]], r[5]))
-        # TODO: Acima o LocationId sempre e None. Alerta para caso o dado não exista! Vericar dps...
     
     # PlaylistItemIndependentMediaMap
     data = cur2.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
@@ -833,7 +785,7 @@ def getDataFromDb2():
 
     # PlaylistItemMarker
     data = cur2.execute("SELECT * FROM PlaylistItemMarker").fetchall()
-    nextId = cur2.execute("SELECT MAX(PlaylistItemMarkerId) FROM PlaylistItemMarker").fetchall()[0][0]
+    nextId = cur3.execute("SELECT MAX(PlaylistItemMarkerId) FROM PlaylistItemMarker").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['PlaylistItemMarker'][r[0]] = nextId
@@ -848,9 +800,6 @@ def getDataFromDb2():
     data = cur2.execute("SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
     for r in data:
         cur3.execute("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", (mapId["PlaylistItemMarker"][r[0]], r[1]))
-   
-    # PlaylistItemAccuracy ???
-    # LastModified ???
 
     # commit all
     con2.commit()
