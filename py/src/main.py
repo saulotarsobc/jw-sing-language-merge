@@ -151,6 +151,10 @@ def getDataFromDb1():
     con1.commit()
     con3.commit()
 
+    # close all
+    con1.close()
+    con3.close()
+
 
 
 def getDataFromDb2():
