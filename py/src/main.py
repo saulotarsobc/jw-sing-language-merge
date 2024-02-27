@@ -689,10 +689,22 @@ def getDataFromDb2():
     # Location
     data = cur2.execute("SELECT * FROM Location").fetchall()
     nextId = cur3.execute("SELECT MAX(LocationId) FROM Location").fetchone()[0]
+
     for r in data:
         nextId += 1
-        mapId['Location'][r[0]] = nextId
-        cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
+        # Verificar se os valores já existem na tabela Location do banco de dados 3
+        existing_data = cur3.execute("SELECT * FROM Location WHERE BookNumber = ? AND ChapterNumber = ? AND KeySymbol = ? AND MepsLanguage = ? AND Type = ?", (r[1], r[2], r[6], r[7], r[8])).fetchone()
+        if existing_data is None:
+            # Se os valores não existirem, inserir o registro na tabela Location do banco de dados 3
+            cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
+        else:
+            # Se os valores existirem, você pode optar por atualizar o registro existente ou fazer outra ação adequada ao seu caso de uso
+            # Neste exemplo, estou apenas imprimindo uma mensagem de aviso
+            print("Os valores já existem na tabela Location do banco de dados 3")
+    # for r in data:
+    #     nextId += 1
+    #     mapId['Location'][r[0]] = nextId
+    #     cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
 
     # Tag
     data = cur2.execute("SELECT * FROM Tag").fetchall()
@@ -739,12 +751,12 @@ def getDataFromDb2():
         cur3.execute("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, mapId["UserMark"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
 
     # PlaylistItemAccuracy
-    data = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
-    nextId = cur3.execute("SELECT MAX(PlaylistItemAccuracyId) FROM PlaylistItemAccuracy").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['PlaylistItemAccuracy'][r[0]] = nextId
-        cur3.execute("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", (nextId, 'asdasd' + str(nextId)))
+    # data = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
+    # nextId = cur3.execute("SELECT MAX(PlaylistItemAccuracyId) FROM PlaylistItemAccuracy").fetchone()[0]
+    # for r in data:
+    #     nextId += 1
+    #     mapId['PlaylistItemAccuracy'][r[0]] = nextId
+    #     cur3.execute("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", (nextId, r[1]))
 
 
     # PlaylistItem
