@@ -742,7 +742,7 @@ def getDataFromDb2():
         mapId['Note'][r[0]] = nextId
         cur3.execute("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, mapId["UserMark"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
 
-    PlaylistItemAccuracy
+    # PlaylistItemAccuracy
     data = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
     nextId = cur3.execute("SELECT MAX(PlaylistItemAccuracyId) FROM PlaylistItemAccuracy").fetchone()[0]
     for r in data:
