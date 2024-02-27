@@ -256,7 +256,7 @@ def getDataFromDb2():
     for r in data:
         nextId += 1
         mapId['TagMap'][r[0]] = nextId
-        cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], mapId["Tag"][r[4]], r[5]))
+        cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], mapId["Note"][r[2]], r[3], mapId["Tag"][r[4]], r[5]))
         # TODO: Acima o LocationId sempre e None. Alerta para caso o dado não exista! Vericar dps...
     
     # PlaylistItemIndependentMediaMap
@@ -274,7 +274,6 @@ def getDataFromDb2():
         cur3.execute("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], r[4], r[5]))
    
     # PlaylistItemMarkerParagraphMap
-    # PlaylistItemMarkerId, MepsDocumentId, ParagraphIndex, MarkerIndexWithinParagraph
     data = cur2.execute("SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
     for r in data:
         cur3.execute("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", (mapId["PlaylistItemMarker"][r[0]], r[1], r[2], r[3]))
@@ -297,8 +296,8 @@ def getDataFromDb2():
 
 
 def createNewBkpFIle():
-    zf = zipfile.ZipFile('./merged.jwlibrary', "w",
-                         compression=zipfile.ZIP_DEFLATED)
+    zf = zipfile.ZipFile('./merged.jwlibrary', "w", compression=zipfile.ZIP_DEFLATED)
+    
     for file in os.listdir('./data-3'):
         zf.write(f"./data-3/{file}", arcname=file)
 

@@ -1,0 +1,13 @@
+{
+    "name": "UserdataBackup_2024-02-27_SAULO.jwlibrary",
+    "creationDate": "2024-02-27T13:35:55.8612609-03:00",
+    "version": 1,
+    "type": 0,
+    "userDataBackup": {
+        "lastModifiedDate": "2024-02-27T16:35:53+00:00",
+        "deviceName": "SAULO",
+        "databaseName": "userData.db",
+        "hash": "9bfafbff1c412d5d005670e566d21b7b1b643a885407e978dc046bcccb0d8c7e",
+        "schemaVersion": 11
+    }
+}
