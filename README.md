@@ -34,7 +34,7 @@ python src/main.py;
 - 🟥 LastModified
 - ✅ IndependentMedia
 - ✅ PlaylistItem
-- 🟥 PlaylistItemAccuracy
+- ✅ PlaylistItemAccuracy
 - ✅ PlaylistItemIndependentMediaMap
 - ✅ PlaylistItemLocationMap
 - ✅ PlaylistItemMarker

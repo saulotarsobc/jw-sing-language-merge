@@ -694,11 +694,14 @@ def getDataFromDb2():
         nextId += 1
         existing_data = cur3.execute("SELECT * FROM Location WHERE BookNumber = ? AND ChapterNumber = ? AND KeySymbol = ? AND MepsLanguage = ? AND Type = ?", (r[1], r[2], r[6], r[7], r[8])).fetchone()
         if existing_data is None:
+            mapId['Location'][r[0]] = nextId
             cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
         else:
-            print("Os valores já existem na tabela Location do banco de dados 3")
+            print(">> ⚠️ Mapenado IDs para a tabela Location")
+            mapId['Location'][r[0]] = existing_data[0]
 
     # Tag
+    # todo: renomear as playlists com nome repetido
     data = cur2.execute("SELECT * FROM Tag").fetchall()
     nextId = cur3.execute("SELECT MAX(TagId) FROM Tag").fetchone()[0]
     for r in data:
@@ -745,10 +748,16 @@ def getDataFromDb2():
     # PlaylistItemAccuracy
     data = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
     nextId = cur3.execute("SELECT MAX(PlaylistItemAccuracyId) FROM PlaylistItemAccuracy").fetchone()[0]
+
     for r in data:
         nextId += 1
-        mapId['PlaylistItemAccuracy'][r[0]] = nextId
-        cur3.execute("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", (nextId, r[1]))
+        existing_data = cur3.execute("SELECT * FROM PlaylistItemAccuracy WHERE Description = ?", (r[1],)).fetchone()
+        if existing_data is None:
+            cur3.execute("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", (nextId, r[1]))
+            mapId['PlaylistItemAccuracy'][r[0]] = nextId
+        else:
+            print(">> ⚠️ Mapeando IDs para a tabela PlaylistItemAccuracy")
+            mapId['PlaylistItemAccuracy'][r[0]] = existing_data[0]
 
 
     # PlaylistItem
