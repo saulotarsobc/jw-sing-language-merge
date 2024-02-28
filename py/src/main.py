@@ -165,13 +165,10 @@ def getDataFromDb2():
     # Location
     data = cur2.execute("SELECT * FROM Location").fetchall()
     nextId = cur3.execute("SELECT MAX(LocationId) FROM Location").fetchone()[0]
-
     for r in data:
         nextId += 1
         existing_data = cur3.execute("SELECT * FROM Location WHERE KeySymbol = ? OR IssueTagNumber = ? OR MepsLanguage = ? OR DocumentId = ? OR Track = ? OR Type = ?", ( r[6], r[5], r[7], r[3], r[4], r[8])).fetchone()
-      
         if existing_data is None:
-            print(existing_data)
             mapId['Location'][r[0]] = nextId
             cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
         else:
@@ -358,6 +355,6 @@ if __name__ == "__main__":
     print(">> Limpando pastas...")
     clearDir("./data-1")
     clearDir("./data-2")
-    clearDir("./data-3")
+    # clearDir("./data-3")
 
     print("\n<<< FIM >>>")
