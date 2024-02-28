@@ -5,11 +5,13 @@ import shutil
 from datetime import datetime, timedelta
 import pytz
 import json
+import hashlib
 
 
 JWFILE1 = "./bkp1.jwlibrary"
 JWFILE2 = "./bkp2.jwlibrary"
-FINALFILENAME = ""
+FINALFILENAME = "new_backup.jwlibrary"
+HASH = ""
 
 
 os.makedirs("./data-3", exist_ok=True)
@@ -34,7 +36,8 @@ def readData2():
 
 def copyAllFilesToData3():
     for file in os.listdir("./data-1"):
-        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
+        # if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
+        if file != "userData.db" and file != "default_thumbnail.png":
             shutil.copy(f"./data-1/{file}", f"./data-3/{file}")
 
     for file in os.listdir("./data-2"):
@@ -46,6 +49,11 @@ def copyThumbNail():
     shutil.copy("./extra/default_thumbnail.png",
                 "./data-3/default_thumbnail.png")
 
+def hashCalc():
+    global HASH
+    with open("./data-3/userData.db", "rb") as f:
+        bytes = f.read() # read entire file as bytes
+        HASH = hashlib.sha256(bytes).hexdigest()
 
 def manifestGenerator():
     now = datetime.now(pytz.timezone("America/Santarem"))
@@ -56,10 +64,7 @@ def manifestGenerator():
     now_utc_iso = now_utc.isoformat("T", "seconds").replace("+00:00", "Z")
     schema_version = 11
 
-    global FINALFILENAME
-    FINALFILENAME = f"UserdataBackup_{now_date}_oluas.jwlibrary"
-
-    j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"🚀 saulotarsobc\",\"databaseName\":\"userData.db\",\"schemaVersion\":{schema_version}}}}}"
+    j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"schemaVersion\":{schema_version}}}}}"
     manifest = json.loads(j)
 
     with open("./data-3/manifest.json", "w") as f:
@@ -450,156 +455,221 @@ def createNewDataBase():
     # Create trigers
     cur.executescript('''CREATE TRIGGER TR_Update_LastModified_Delete_Tag DELETE ON Tag BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_Tag INSERT ON Tag BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_Tag
         UPDATE ON Tag BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_TagMap DELETE ON TagMap BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_TagMap INSERT ON TagMap BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_TagMap
         UPDATE ON TagMap BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_Note DELETE ON Note BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_Note INSERT ON Note BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_Note
         UPDATE ON Note BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_Bookmark DELETE ON Bookmark BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_Bookmark INSERT ON Bookmark BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_Bookmark
         UPDATE ON Bookmark BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_UserMark DELETE ON UserMark BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_UserMark INSERT ON UserMark BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_UserMark
         UPDATE ON UserMark BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_BlockRange DELETE ON BlockRange BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_BlockRange INSERT ON BlockRange BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_BlockRange
         UPDATE ON BlockRange BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_InputField DELETE ON InputField BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_InputField INSERT ON InputField BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_InputField
         UPDATE ON InputField BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_IndependentMedia DELETE ON IndependentMedia BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_IndependentMedia INSERT ON IndependentMedia BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_IndependentMedia
         UPDATE ON IndependentMedia BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Delete_PlaylistItem DELETE ON PlaylistItem BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Insert_PlaylistItem INSERT ON PlaylistItem BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Update_LastModified_Update_PlaylistItem
         UPDATE ON PlaylistItem BEGIN
         UPDATE LastModified
-        SET LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+        SET
+            LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
+
         END;
 
         CREATE TRIGGER TR_Raise_Error_Before_Delete_LastModified BEFORE DELETE ON LastModified BEGIN
-        SELECT RAISE (FAIL, 'DELETE FROM LastModified not allowed');
+        SELECT
+            RAISE (FAIL, 'DELETE FROM LastModified not allowed');
+
+        END;
+
+        CREATE TRIGGER TR_Raise_Error_Before_Insert_LastModified BEFORE INSERT ON LastModified BEGIN
+        SELECT
+            RAISE (FAIL, 'INSERT INTO LastModified not allowed');
+
         END;
     ''')
 
     con.commit()
     con.close()
 
+def copyDatabase():
+    shutil.copy("./extra/userData.db",
+            "./data-3/userData.db")
 
 def getDataFromDb1():
     con1 = sqlite3.connect("./data-1/userData.db")
@@ -632,8 +702,8 @@ def getDataFromDb1():
     data = cur1.execute("SELECT * FROM InputField").fetchall()
     cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", data)
 
-    data = cur1.execute("SELECT * FROM LastModified").fetchall()
-    cur3.executemany("INSERT INTO LastModified VALUES(?)", data)
+    # data = cur1.execute("SELECT * FROM LastModified").fetchall()
+    # cur3.executemany("INSERT INTO LastModified VALUES(?)", data)
 
     data = cur1.execute("SELECT * FROM IndependentMedia").fetchall()
     cur3.executemany("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", data)
@@ -666,7 +736,6 @@ def getDataFromDb1():
     # close all
     con1.close()
     con3.close()
-
 
 
 def getDataFromDb2():
@@ -850,20 +919,26 @@ if __name__ == "__main__":
     print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
     copyAllFilesToData3()
 
-    print(">> Copiando default_thumbnail.png para /data-3")
-    copyThumbNail()
+    # print(">> Criando nova base de dados")
+    # createNewDataBase()
 
-    print(">> Criando e copiando manifest.json para /data-3")
-    manifestGenerator()
-
-    print(">> Criando nova base de dados")
-    createNewDataBase()
+    print(">> Copiando nova base de dados")
+    copyDatabase()
 
     print(">> Copiando dados da base-1 para a nova base")
     getDataFromDb1()
 
     print(">> Copiando dados da base-2 para a nova base")
     getDataFromDb2()
+
+    print(">> Copiando default_thumbnail.png para /data-3")
+    copyThumbNail()
+
+    # print(">> Gerando nova hash")
+    # hashCalc()
+
+    # print(">> Criando e copiando manifest.json para /data-3")
+    # manifestGenerator()
 
     print(">> Criando novo .jwlibrary")
     createNewBkpFIle()
