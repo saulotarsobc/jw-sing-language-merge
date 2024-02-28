@@ -186,7 +186,7 @@ def getDataFromDb2():
         if existing_data is None:
             cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2]))
         else:
-            cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2] + f"_{uuid.uuid4()}"))
+            cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2] + f"_{str(uuid.uuid4())}"))
     
     # Bookmark
     data = cur2.execute("SELECT * FROM Bookmark").fetchall()
