@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import pytz
 import json
 import hashlib
+import uuid
 
 
 JWFILE1 = "./bkp1.jwlibrary"
@@ -176,13 +177,16 @@ def getDataFromDb2():
             mapId['Location'][r[0]] = existing_data[0]
 
     # Tag
-    # todo: renomear as playlists com nome repetido
     data = cur2.execute("SELECT * FROM Tag").fetchall()
     nextId = cur3.execute("SELECT MAX(TagId) FROM Tag").fetchone()[0]
     for r in data:
         nextId += 1
         mapId['Tag'][r[0]] = nextId
-        cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2]))
+        existing_data = cur3.execute("SELECT * FROM Tag WHERE Type = ? AND Name = ?", (r[1], r[2])).fetchone()
+        if existing_data is None:
+            cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2]))
+        else:
+            cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2] + f"_{uuid.uuid4()}"))
     
     # Bookmark
     data = cur2.execute("SELECT * FROM Bookmark").fetchall()
