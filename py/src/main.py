@@ -326,9 +326,6 @@ if __name__ == "__main__":
     print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
     copyAllFilesToData3()
 
-    # print(">> Criando nova base de dados")
-    # createNewDataBase()
-
     print(">> Copiando nova base de dados")
     copyDatabase()
 
