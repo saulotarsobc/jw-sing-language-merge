@@ -168,13 +168,17 @@ def getDataFromDb2():
 
     for r in data:
         nextId += 1
-        existing_data = cur3.execute("SELECT * FROM Location WHERE BookNumber = ? AND ChapterNumber = ? AND KeySymbol = ? AND MepsLanguage = ? AND Type = ?", (r[1], r[2], r[6], r[7], r[8])).fetchone()
+        existing_data = cur3.execute("SELECT * FROM Location WHERE KeySymbol = ? OR IssueTagNumber = ? OR MepsLanguage = ? OR DocumentId = ? OR Track = ? OR Type = ?", ( r[6], r[5], r[7], r[3], r[4], r[8])).fetchone()
+      
         if existing_data is None:
+            print(existing_data)
             mapId['Location'][r[0]] = nextId
             cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
         else:
             print(">> ⚠️ Mapenado IDs para a tabela Location")
             mapId['Location'][r[0]] = existing_data[0]
+
+    # exit()
 
     # Tag
     data = cur2.execute("SELECT * FROM Tag").fetchall()
