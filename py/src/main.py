@@ -167,15 +167,8 @@ def getDataFromDb2():
     nextId = cur3.execute("SELECT MAX(LocationId) FROM Location").fetchone()[0]
     for r in data:
         nextId += 1
-        existing_data = cur3.execute("SELECT * FROM Location WHERE KeySymbol = ? OR IssueTagNumber = ? OR MepsLanguage = ? OR DocumentId = ? OR Track = ? OR Type = ?", ( r[6], r[5], r[7], r[3], r[4], r[8])).fetchone()
-        if existing_data is None:
-            mapId['Location'][r[0]] = nextId
-            cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
-        else:
-            print(">> ⚠️ Mapenado IDs para a tabela Location")
-            mapId['Location'][r[0]] = existing_data[0]
-
-    # exit()
+        mapId['Location'][r[0]] = nextId
+        cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
 
     # Tag
     data = cur2.execute("SELECT * FROM Tag").fetchall()
@@ -188,6 +181,22 @@ def getDataFromDb2():
             cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2]))
         else:
             cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2] + f" - {str(uuid.uuid4())[:6]}"))
+
+    # PlaylistItem
+    data = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
+    nextId = cur3.execute("SELECT MAX(PlaylistItemId) FROM PlaylistItem").fetchone()[0]
+    for r in data:
+        nextId += 1
+        mapId['PlaylistItem'][r[0]] = nextId
+        cur3.execute("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6]))
+
+    # TagMap
+    data = cur2.execute("SELECT * FROM TagMap").fetchall()
+    nextId = cur3.execute("SELECT MAX(TagMapId) FROM TagMap").fetchone()[0]
+    for r in data:
+        nextId += 1
+        mapId['TagMap'][r[0]] = nextId
+        cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], mapId["Location"].get(r[2]), mapId["Note"].get(r[3]), mapId["Tag"][r[4]], r[5]))
     
     # Bookmark
     data = cur2.execute("SELECT * FROM Bookmark").fetchall()
@@ -240,13 +249,6 @@ def getDataFromDb2():
             mapId['PlaylistItemAccuracy'][r[0]] = existing_data[0]
 
 
-    # PlaylistItem
-    data = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
-    nextId = cur3.execute("SELECT MAX(PlaylistItemId) FROM PlaylistItem").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['PlaylistItem'][r[0]] = nextId
-        cur3.execute("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4], r[5], r[6]))
    
     # PlaylistItemLocationMap
     data = cur2.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
@@ -266,13 +268,6 @@ def getDataFromDb2():
             cur3.execute("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4]))
             mapId['IndependentMedia'][r[0]] = nextId
     
-    # TagMap
-    data = cur2.execute("SELECT * FROM TagMap").fetchall()
-    nextId = cur3.execute("SELECT MAX(TagMapId) FROM TagMap").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['TagMap'][r[0]] = nextId
-        cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], mapId["Location"].get(r[2]), mapId["Note"].get(r[3]), mapId["Tag"][r[4]], r[5]))
     
     # PlaylistItemIndependentMediaMap
     data = cur2.execute("SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
@@ -352,7 +347,7 @@ if __name__ == "__main__":
     print(">> Criando novo .jwlibrary")
     createNewBkpFIle()
 
-    print(">> Limpando pastas...")
+    # print(">> Limpando pastas...")
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
