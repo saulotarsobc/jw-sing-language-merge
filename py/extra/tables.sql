@@ -1,23 +1,26 @@
+-- database: ./userData.db
 -- IndependentMedia definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     IndependentMedia (
         IndependentMediaId INTEGER NOT NULL PRIMARY KEY,
         OriginalFilename TEXT NOT NULL,
         FilePath TEXT NOT NULL UNIQUE,
         MimeType TEXT NOT NULL,
         Hash TEXT NOT NULL,
-        CHECK (length (OriginalFilename) > 0),
-        CHECK (length (FilePath) > 0),
-        CHECK (length (MimeType) > 0),
-        CHECK (length (Hash) > 0)
+        CHECK (length(OriginalFilename) > 0),
+        CHECK (length(FilePath) > 0),
+        CHECK (length(MimeType) > 0),
+        CHECK (length(Hash) > 0)
     );
 
 -- LastModified definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     LastModified (LastModified TEXT NOT NULL);
 
+DROP TABLE IF EXISTS Location;
+
 -- Location definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     Location (
         LocationId INTEGER NOT NULL PRIMARY KEY,
         BookNumber INTEGER,
@@ -29,21 +32,21 @@ CREATE TABLE
         MepsLanguage INTEGER,
         Type INTEGER NOT NULL,
         Title TEXT,
-        UNIQUE (
-            BookNumber,
-            ChapterNumber,
-            KeySymbol,
-            MepsLanguage,
-            Type
-        ),
-        UNIQUE (
-            KeySymbol,
-            IssueTagNumber,
-            MepsLanguage,
-            DocumentId,
-            Track,
-            Type
-        ),
+        -- UNIQUE (
+        --     BookNumber,
+        --     ChapterNumber,
+        --     KeySymbol,
+        --     MepsLanguage,
+        --     Type
+        -- ),
+        -- UNIQUE (
+        --     KeySymbol,
+        --     IssueTagNumber,
+        --     MepsLanguage,
+        --     DocumentId,
+        --     Track,
+        --     Type
+        -- ),
         CHECK (
             (
                 Type = 0
@@ -57,7 +60,7 @@ CREATE TABLE
                         AND (
                             (
                                 KeySymbol IS NOT NULL
-                                AND (length (KeySymbol) > 0)
+                                AND (length(KeySymbol) > 0)
                             )
                             OR (
                                 DocumentId IS NOT NULL
@@ -69,7 +72,7 @@ CREATE TABLE
                         BookNumber IS NOT NULL
                         AND BookNumber != 0
                         AND KeySymbol IS NOT NULL
-                        AND (length (KeySymbol) > 0)
+                        AND (length(KeySymbol) > 0)
                         AND (
                             ChapterNumber IS NULL
                             OR ChapterNumber = 0
@@ -81,7 +84,7 @@ CREATE TABLE
                         AND BookNumber IS NOT NULL
                         AND BookNumber != 0
                         AND KeySymbol IS NOT NULL
-                        AND (length (KeySymbol) > 0)
+                        AND (length(KeySymbol) > 0)
                     )
                 )
             )
@@ -103,7 +106,7 @@ CREATE TABLE
                     OR DocumentId = 0
                 )
                 AND KeySymbol IS NOT NULL
-                AND (length (KeySymbol) > 0)
+                AND (length(KeySymbol) > 0)
                 AND Track IS NULL
             )
             OR Type != 1
@@ -124,37 +127,26 @@ CREATE TABLE
         )
     );
 
-CREATE INDEX IX_Location_KeySymbol_MepsLanguage_BookNumber_ChapterNumber ON Location (
-    KeySymbol,
-    MepsLanguage,
-    BookNumber,
-    ChapterNumber
-);
-
-CREATE INDEX IX_Location_MepsLanguage_DocumentId ON Location (MepsLanguage, DocumentId);
-
 -- PlaylistItemAccuracy definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItemAccuracy (
         PlaylistItemAccuracyId INTEGER NOT NULL PRIMARY KEY,
         Description TEXT NOT NULL UNIQUE
     );
 
 -- Tag definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     Tag (
         TagId INTEGER NOT NULL PRIMARY KEY,
         Type INTEGER NOT NULL,
         Name TEXT NOT NULL,
         UNIQUE (Type, Name),
-        CHECK (length (Name) > 0),
+        CHECK (length(Name) > 0),
         CHECK (Type IN (0, 1, 2))
     );
 
-CREATE INDEX IX_Tag_Name_Type_TagId ON Tag (Name, Type, TagId);
-
 -- Bookmark definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     Bookmark (
         BookmarkId INTEGER NOT NULL PRIMARY KEY,
         LocationId INTEGER NOT NULL,
@@ -166,8 +158,7 @@ CREATE TABLE
         BlockIdentifier INTEGER,
         FOREIGN KEY (LocationId) REFERENCES Location (LocationId),
         FOREIGN KEY (PublicationLocationId) REFERENCES Location (LocationId),
-        CONSTRAINT PublicationLocationId_Slot UNIQUE (PublicationLocationId, Slot),
-        CHECK (
+        CONSTRAINT PublicationLocationId_Slot UNIQUE (PublicationLocationId, Slot) CHECK (
             (
                 BlockType = 0
                 AND BlockIdentifier IS NULL
@@ -180,7 +171,7 @@ CREATE TABLE
     );
 
 -- InputField definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     InputField (
         LocationId INTEGER NOT NULL,
         TextTag TEXT NOT NULL,
@@ -190,7 +181,7 @@ CREATE TABLE
     );
 
 -- PlaylistItem definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItem (
         PlaylistItemId INTEGER NOT NULL PRIMARY KEY,
         Label TEXT NOT NULL,
@@ -201,14 +192,12 @@ CREATE TABLE
         ThumbnailFilePath TEXT,
         FOREIGN KEY (Accuracy) REFERENCES PlaylistItemAccuracy (PlaylistItemAccuracyId),
         FOREIGN KEY (ThumbnailFilePath) REFERENCES IndependentMedia (FilePath),
-        CHECK (length (Label) > 0),
+        CHECK (length(Label) > 0),
         CHECK (EndAction IN (0, 1, 2, 3))
     );
 
-CREATE INDEX IX_PlaylistItem_ThumbnailFilePath ON PlaylistItem (ThumbnailFilePath);
-
 -- PlaylistItemIndependentMediaMap definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItemIndependentMediaMap (
         PlaylistItemId INTEGER NOT NULL,
         IndependentMediaId INTEGER NOT NULL,
@@ -218,10 +207,8 @@ CREATE TABLE
         FOREIGN KEY (IndependentMediaId) REFERENCES IndependentMedia (IndependentMediaId)
     ) WITHOUT ROWID;
 
-CREATE INDEX IX_PlaylistItemIndependentMediaMap_IndependentMediaId ON PlaylistItemIndependentMediaMap (IndependentMediaId);
-
 -- PlaylistItemLocationMap definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItemLocationMap (
         PlaylistItemId INTEGER NOT NULL,
         LocationId INTEGER NOT NULL,
@@ -232,10 +219,8 @@ CREATE TABLE
         FOREIGN KEY (LocationId) REFERENCES Location (LocationId)
     ) WITHOUT ROWID;
 
-CREATE INDEX IX_PlaylistItemLocationMap_LocationId ON PlaylistItemLocationMap (LocationId);
-
 -- PlaylistItemMarker definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItemMarker (
         PlaylistItemMarkerId INTEGER NOT NULL PRIMARY KEY,
         PlaylistItemId INTEGER NOT NULL,
@@ -248,7 +233,7 @@ CREATE TABLE
     );
 
 -- PlaylistItemMarkerBibleVerseMap definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItemMarkerBibleVerseMap (
         PlaylistItemMarkerId INTEGER NOT NULL,
         VerseId INTEGER NOT NULL,
@@ -257,7 +242,7 @@ CREATE TABLE
     ) WITHOUT ROWID;
 
 -- PlaylistItemMarkerParagraphMap definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     PlaylistItemMarkerParagraphMap (
         PlaylistItemMarkerId INTEGER NOT NULL,
         MepsDocumentId INTEGER NOT NULL,
@@ -273,7 +258,7 @@ CREATE TABLE
     ) WITHOUT ROWID;
 
 -- UserMark definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     UserMark (
         UserMarkId INTEGER NOT NULL PRIMARY KEY,
         ColorIndex INTEGER NOT NULL,
@@ -284,10 +269,8 @@ CREATE TABLE
         FOREIGN KEY (LocationId) REFERENCES Location (LocationId)
     );
 
-CREATE INDEX IX_UserMark_LocationId ON UserMark (LocationId);
-
 -- BlockRange definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     BlockRange (
         BlockRangeId INTEGER NOT NULL PRIMARY KEY,
         BlockType INTEGER NOT NULL,
@@ -299,10 +282,8 @@ CREATE TABLE
         FOREIGN KEY (UserMarkId) REFERENCES UserMark (UserMarkId)
     );
 
-CREATE INDEX IX_BlockRange_UserMarkId ON BlockRange (UserMarkId);
-
 -- Note definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     Note (
         NoteId INTEGER NOT NULL PRIMARY KEY,
         Guid TEXT NOT NULL UNIQUE,
@@ -310,8 +291,8 @@ CREATE TABLE
         LocationId INTEGER,
         Title TEXT,
         Content TEXT,
-        LastModified TEXT NOT NULL DEFAULT (strftime ('%Y-%m-%dT%H:%M:%SZ', 'now')),
-        Created TEXT NOT NULL DEFAULT (strftime ('%Y-%m-%dT%H:%M:%SZ', 'now')),
+        LastModified TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+        Created TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
         BlockType INTEGER NOT NULL DEFAULT 0,
         BlockIdentifier INTEGER,
         CHECK (
@@ -328,12 +309,8 @@ CREATE TABLE
         FOREIGN KEY (LocationId) REFERENCES Location (LocationId)
     );
 
-CREATE INDEX IX_Note_LastModified_LocationId ON Note (LastModified, LocationId);
-
-CREATE INDEX IX_Note_LocationId_BlockIdentifier ON Note (LocationId, BlockIdentifier);
-
 -- TagMap definition
-CREATE TABLE
+CREATE TABLE IF NOT EXISTS
     TagMap (
         TagMapId INTEGER NOT NULL PRIMARY KEY,
         PlaylistItemId INTEGER,
@@ -368,6 +345,15 @@ CREATE TABLE
         )
     );
 
+CREATE INDEX IX_Location_KeySymbol_MepsLanguage_BookNumber_ChapterNumber ON Location (
+    KeySymbol,
+    MepsLanguage,
+    BookNumber,
+    ChapterNumber
+);
+
+CREATE INDEX IX_Location_MepsLanguage_DocumentId ON Location (MepsLanguage, DocumentId);
+
 CREATE INDEX IX_TagMap_TagId ON TagMap (TagId);
 
 CREATE INDEX IX_TagMap_PlaylistItemId_TagId_Position ON TagMap (PlaylistItemId, TagId, Position);
@@ -375,3 +361,19 @@ CREATE INDEX IX_TagMap_PlaylistItemId_TagId_Position ON TagMap (PlaylistItemId, 
 CREATE INDEX IX_TagMap_LocationId_TagId_Position ON TagMap (LocationId, TagId, Position);
 
 CREATE INDEX IX_TagMap_NoteId_TagId_Position ON TagMap (NoteId, TagId, Position);
+
+CREATE INDEX IX_Tag_Name_Type_TagId ON Tag (Name, Type, TagId);
+
+CREATE INDEX IX_PlaylistItem_ThumbnailFilePath ON PlaylistItem (ThumbnailFilePath);
+
+CREATE INDEX IX_PlaylistItemLocationMap_LocationId ON PlaylistItemLocationMap (LocationId);
+
+CREATE INDEX IX_PlaylistItemIndependentMediaMap_IndependentMediaId ON PlaylistItemIndependentMediaMap (IndependentMediaId);
+
+CREATE INDEX IX_UserMark_LocationId ON UserMark (LocationId);
+
+CREATE INDEX IX_BlockRange_UserMarkId ON BlockRange (UserMarkId);
+
+CREATE INDEX IX_Note_LastModified_LocationId ON Note (LastModified, LocationId);
+
+CREATE INDEX IX_Note_LocationId_BlockIdentifier ON Note (LocationId, BlockIdentifier);

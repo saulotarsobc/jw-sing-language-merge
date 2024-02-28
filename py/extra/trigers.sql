@@ -1,3 +1,4 @@
+-- database: userData.db
 CREATE TRIGGER TR_Update_LastModified_Delete_Tag DELETE ON Tag BEGIN
 UPDATE LastModified
 SET
