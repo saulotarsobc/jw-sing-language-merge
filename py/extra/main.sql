@@ -168,16 +168,16 @@ CREATE TABLE
         FOREIGN KEY (LocationId) REFERENCES Location (LocationId),
         FOREIGN KEY (PublicationLocationId) REFERENCES Location (LocationId),
         CONSTRAINT PublicationLocationId_Slot UNIQUE (PublicationLocationId, Slot)
-        -- CHECK (
-        --     (
-        --         BlockType = 0
-        --         AND BlockIdentifier IS NULL
-        --     )
-        --     OR (
-        --         (BlockType BETWEEN 1 AND 2)
-        --         AND BlockIdentifier IS NOT NULL
-        --     )
-        -- )
+        CHECK (
+            (
+                BlockType = 0
+                AND BlockIdentifier IS NULL
+            )
+            OR (
+                (BlockType BETWEEN 1 AND 2)
+                AND BlockIdentifier IS NOT NULL
+            )
+        )
     );
 
 -- InputField definition
