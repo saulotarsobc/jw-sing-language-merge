@@ -36,8 +36,7 @@ def readData2():
 
 def copyAllFilesToData3():
     for file in os.listdir("./data-1"):
-        # if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-        if file != "userData.db" and file != "default_thumbnail.png":
+        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
             shutil.copy(f"./data-1/{file}", f"./data-3/{file}")
 
     for file in os.listdir("./data-2"):
@@ -850,9 +849,14 @@ def getDataFromDb2():
     data = cur2.execute("SELECT * FROM IndependentMedia").fetchall()
     nextId = cur3.execute("SELECT MAX(IndependentMediaId) FROM IndependentMedia").fetchone()[0]
     for r in data:
-        nextId += 1
-        mapId['IndependentMedia'][r[0]] = nextId
-        cur3.execute("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4]))
+        existing_data = cur3.execute("SELECT IndependentMediaId FROM IndependentMedia WHERE FilePath = ?", (r[2],)).fetchone()
+        if existing_data:
+            existing_id = existing_data[0]
+            mapId['IndependentMedia'][r[0]] = existing_id
+        else:
+            nextId += 1
+            cur3.execute("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", (nextId, r[1], r[2], r[3], r[4]))
+            mapId['IndependentMedia'][r[0]] = nextId
     
     # TagMap
     data = cur2.execute("SELECT * FROM TagMap").fetchall()
@@ -937,8 +941,8 @@ if __name__ == "__main__":
     # print(">> Gerando nova hash")
     # hashCalc()
 
-    # print(">> Criando e copiando manifest.json para /data-3")
-    # manifestGenerator()
+    print(">> Criando e copiando manifest.json para /data-3")
+    manifestGenerator()
 
     print(">> Criando novo .jwlibrary")
     createNewBkpFIle()
