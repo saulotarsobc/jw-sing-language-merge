@@ -5,3 +5,5 @@ node_modules
 **/data-2/**
 **/data-3/**
 *.jwlibrary
+py/build
+py/**/*.exe
