@@ -1,27 +1,34 @@
 import os
 import sqlite3
 import zipfile
-import shutil
-from datetime import datetime, timedelta
+from shutil import copy, rmtree
+from datetime import datetime
 import pytz
 import json
-import hashlib
+from hashlib import sha256
 import uuid
 from time import sleep
+from os import makedirs, listdir, remove
 
 
 JWFILE1 = "./bkp1.jwlibrary"
 JWFILE2 = "./bkp2.jwlibrary"
-FINALFILENAME = "new_backup.jwlibrary"
-HASH = ""
+FINALFILENAME = "Merged_Backup.jwlibrary"
+HASH = "<=hash>="
 
-
-os.makedirs("./data-3", exist_ok=True)
-
+makedirs("./data-1", exist_ok=True)
+makedirs("./data-2", exist_ok=True)
+makedirs("./data-3", exist_ok=True)
 
 def clearDir(dir):
-    for file in os.listdir(dir):
-        os.remove(f"{dir}/{file}")
+    for file in listdir(dir):
+        remove(f"{dir}/{file}")
+
+
+def clearDirAllDirs():
+    rmtree("./data-1",)
+    rmtree("./data-2")
+    rmtree("./data-3")
 
 
 def readData1():
@@ -37,24 +44,22 @@ def readData2():
 
 
 def copyAllFilesToData3():
-    for file in os.listdir("./data-1"):
+    for file in listdir("./data-1"):
         if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            shutil.copy(f"./data-1/{file}", f"./data-3/{file}")
+            copy(f"./data-1/{file}", f"./data-3/{file}")
 
-    for file in os.listdir("./data-2"):
+    for file in listdir("./data-2"):
         if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            shutil.copy(f"./data-2/{file}", f"./data-3/{file}")
+            copy(f"./data-2/{file}", f"./data-3/{file}")
 
 
 def copyThumbNail():
-    shutil.copy("./extra/default_thumbnail.png",
-                "./data-3/default_thumbnail.png")
+    copy("./extra/default_thumbnail.png", "./data-3/default_thumbnail.png")
 
 def hashCalc():
     global HASH
     with open("./data-3/userData.db", "rb") as f:
-        bytes = f.read() # read entire file as bytes
-        HASH = hashlib.sha256(bytes).hexdigest()
+        HASH = sha256(f.read()).hexdigest()
 
 def manifestGenerator():
     now = datetime.now(pytz.timezone("America/Santarem"))
@@ -65,15 +70,14 @@ def manifestGenerator():
     now_utc_iso = now_utc.isoformat("T", "seconds").replace("+00:00", "Z")
     schema_version = 11
 
-    j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"schemaVersion\":{schema_version}}}}}"
+    j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"hash\":\"{HASH}\",\"schemaVersion\":{schema_version}}}}}"
     manifest = json.loads(j)
 
     with open("./data-3/manifest.json", "w") as f:
         json.dump(manifest, f)
 
 def copyDatabase():
-    shutil.copy("./extra/userData.db",
-            "./data-3/userData.db")
+    copy("./extra/userData.db", "./data-3/userData.db")
 
 def getDataFromDb1():
     con1 = sqlite3.connect("./data-1/userData.db")
@@ -305,7 +309,7 @@ def getDataFromDb2():
 
 def createNewBkpFIle():
     zf = zipfile.ZipFile( FINALFILENAME, "w", compression=zipfile.ZIP_DEFLATED)
-    for file in os.listdir('./data-3'):
+    for file in listdir('./data-3'):
         zf.write(f"./data-3/{file}", arcname=file)
 
     zf.close()
@@ -313,58 +317,44 @@ def createNewBkpFIle():
 
 if __name__ == "__main__":
     
-    print(">> Limpando pastas...")
     print("<<< Iniciando...>>>")
-    sleep(.3)
+    print(">> Limpando pastas...")
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
 
     print(">> Descopactando bkp 1 e compiando seus arquivos para data-1")
-    sleep(.3)
     readData1()
 
     print(">> Descopactando bkp 2 e compiando seus arquivos para data-2")
-    sleep(.3)
     readData2()
 
     print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
-    sleep(.3)
     copyAllFilesToData3()
 
     print(">> Copiando nova base de dados")
-    sleep(.3)
     copyDatabase()
 
     print(">> Copiando dados da base-1 para a nova base")
-    sleep(.3)
     getDataFromDb1()
 
     print(">> Copiando dados da base-2 para a nova base")
-    sleep(.3)
     getDataFromDb2()
 
     print(">> Copiando default_thumbnail.png para /data-3")
-    sleep(.3)
     copyThumbNail()
 
-    # print(">> Gerando nova hash")
-    # sleep(.3)
-    # hashCalc()
+    print(">> Gerando nova hash")
+    hashCalc()
 
     print(">> Criando e copiando manifest.json para /data-3")
-    sleep(.3)
     manifestGenerator()
 
     print(">> Criando novo .jwlibrary")
-    sleep(.3)
     createNewBkpFIle()
 
     print(">> Limpando pastas...")
-    sleep(.3)
-    clearDir("./data-1")
-    clearDir("./data-2")
-    clearDir("./data-3")
+    clearDirAllDirs()
 
     print("\n<<< FIM >>>")
     sleep(5)
