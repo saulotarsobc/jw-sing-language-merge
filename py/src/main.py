@@ -7,6 +7,7 @@ import pytz
 import json
 import hashlib
 import uuid
+from time import sleep
 
 
 JWFILE1 = "./bkp1.jwlibrary"
@@ -311,45 +312,59 @@ def createNewBkpFIle():
 
 
 if __name__ == "__main__":
-    print("<<< Iniciando...>>>")
+    
     print(">> Limpando pastas...")
+    print("<<< Iniciando...>>>")
+    sleep(.3)
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
 
     print(">> Descopactando bkp 1 e compiando seus arquivos para data-1")
+    sleep(.3)
     readData1()
 
     print(">> Descopactando bkp 2 e compiando seus arquivos para data-2")
+    sleep(.3)
     readData2()
 
     print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
+    sleep(.3)
     copyAllFilesToData3()
 
     print(">> Copiando nova base de dados")
+    sleep(.3)
     copyDatabase()
 
     print(">> Copiando dados da base-1 para a nova base")
+    sleep(.3)
     getDataFromDb1()
 
     print(">> Copiando dados da base-2 para a nova base")
+    sleep(.3)
     getDataFromDb2()
 
     print(">> Copiando default_thumbnail.png para /data-3")
+    sleep(.3)
     copyThumbNail()
 
     # print(">> Gerando nova hash")
+    # sleep(.3)
     # hashCalc()
 
     print(">> Criando e copiando manifest.json para /data-3")
+    sleep(.3)
     manifestGenerator()
 
     print(">> Criando novo .jwlibrary")
+    sleep(.3)
     createNewBkpFIle()
 
-    # print(">> Limpando pastas...")
+    print(">> Limpando pastas...")
+    sleep(.3)
     clearDir("./data-1")
     clearDir("./data-2")
     clearDir("./data-3")
 
     print("\n<<< FIM >>>")
+    sleep(5)

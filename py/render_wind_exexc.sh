@@ -1,2 +1,2 @@
 #! bash
-pyinstaller -F --name "Windown-JW-File-Merge" --specpath ./extra --distpath "./"  -i "./extra/icon.png" -w ./src/main.py
+pyinstaller -F --name "Windown-JW-File-Merge" --specpath ./extra --distpath "./"  -i "./icon.png" -c ./src/main.py
