@@ -7,3 +7,4 @@ node_modules
 *.jwlibrary
 py/build
 py/**/*.exe
+py/**/*.spec

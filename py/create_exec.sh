@@ -7,4 +7,4 @@ pyinstaller \
     --distpath="." \
     --name="Windown-JW-File-Merge" \
     --icon="extra/icon.png" \
-    main.py
+    src/main.py
