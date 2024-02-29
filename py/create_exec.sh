@@ -1,6 +1,6 @@
 #! bash
 pyinstaller \
-    -F \
+    --onefile \
     --name "Windown-JW-File-Merge" \
     --specpath ./extra \
     --distpath "./" \
