@@ -11,14 +11,14 @@ from time import sleep
 from os import makedirs, listdir, remove
 
 
-JWFILE1 = "./bkp1.jwlibrary"
-JWFILE2 = "./bkp2.jwlibrary"
+JWFILE1 = "bkp1.jwlibrary"
+JWFILE2 = "bkp2.jwlibrary"
 FINALFILENAME = "Merged_Backup.jwlibrary"
 HASH = "<=hash>="
 
-makedirs("./data-1", exist_ok=True)
-makedirs("./data-2", exist_ok=True)
-makedirs("./data-3", exist_ok=True)
+makedirs("data-1", exist_ok=True)
+makedirs("data-2", exist_ok=True)
+makedirs("data-3", exist_ok=True)
 
 def clearDir(dir):
     for file in listdir(dir):
@@ -26,39 +26,39 @@ def clearDir(dir):
 
 
 def clearDirAllDirs():
-    rmtree("./data-1",)
-    rmtree("./data-2")
-    rmtree("./data-3")
+    rmtree("data-1",)
+    rmtree("data-2")
+    rmtree("data-3")
 
 
 def readData1():
     with zipfile.ZipFile(JWFILE1, "r") as zip_ref:
         files = zip_ref.namelist()
-        zip_ref.extractall("./data-1")
+        zip_ref.extractall("data-1")
 
 
 def readData2():
     with zipfile.ZipFile(JWFILE2, "r") as zip_ref:
         files = zip_ref.namelist()
-        zip_ref.extractall("./data-2")
+        zip_ref.extractall("data-2")
 
 
 def copyAllFilesToData3():
-    for file in listdir("./data-1"):
+    for file in listdir("data-1"):
         if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            copy(f"./data-1/{file}", f"./data-3/{file}")
+            copy(f"data-1/{file}", f"data-3/{file}")
 
-    for file in listdir("./data-2"):
+    for file in listdir("data-2"):
         if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            copy(f"./data-2/{file}", f"./data-3/{file}")
+            copy(f"data-2/{file}", f"data-3/{file}")
 
 
 def copyThumbNail():
-    copy("./extra/default_thumbnail.png", "./data-3/default_thumbnail.png")
+    copy("extra/default_thumbnail.png", "data-3/default_thumbnail.png")
 
 def hashCalc():
     global HASH
-    with open("./data-3/userData.db", "rb") as f:
+    with open("data-3/userData.db", "rb") as f:
         HASH = sha256(f.read()).hexdigest()
 
 def manifestGenerator():
@@ -73,15 +73,15 @@ def manifestGenerator():
     j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"hash\":\"{HASH}\",\"schemaVersion\":{schema_version}}}}}"
     manifest = json.loads(j)
 
-    with open("./data-3/manifest.json", "w") as f:
+    with open("data-3/manifest.json", "w") as f:
         json.dump(manifest, f)
 
 def copyDatabase():
-    copy("./extra/userData.db", "./data-3/userData.db")
+    copy("extra/userData.db", "data-3/userData.db")
 
 def getDataFromDb1():
-    con1 = sqlite3.connect("./data-1/userData.db")
-    con3 = sqlite3.connect("./data-3/userData.db")
+    con1 = sqlite3.connect("data-1/userData.db")
+    con3 = sqlite3.connect("data-3/userData.db")
 
     cur1 = con1.cursor()
     cur3 = con3.cursor()
@@ -147,8 +147,8 @@ def getDataFromDb1():
 
 
 def getDataFromDb2():
-    con2 = sqlite3.connect("./data-2/userData.db")
-    con3 = sqlite3.connect("./data-3/userData.db")
+    con2 = sqlite3.connect("data-2/userData.db")
+    con3 = sqlite3.connect("data-3/userData.db")
 
     cur2 = con2.cursor()
     cur3 = con3.cursor()
@@ -309,8 +309,8 @@ def getDataFromDb2():
 
 def createNewBkpFIle():
     zf = zipfile.ZipFile( FINALFILENAME, "w", compression=zipfile.ZIP_DEFLATED)
-    for file in listdir('./data-3'):
-        zf.write(f"./data-3/{file}", arcname=file)
+    for file in listdir('data-3'):
+        zf.write(f"data-3/{file}", arcname=file)
 
     zf.close()
 
@@ -319,9 +319,9 @@ if __name__ == "__main__":
     
     print("<<< Iniciando...>>>")
     print(">> Limpando pastas...")
-    clearDir("./data-1")
-    clearDir("./data-2")
-    clearDir("./data-3")
+    clearDir("data-1")
+    clearDir("data-2")
+    clearDir("data-3")
 
     print(">> Descopactando bkp 1 e compiando seus arquivos para data-1")
     readData1()
@@ -357,4 +357,4 @@ if __name__ == "__main__":
     clearDirAllDirs()
 
     print("\n<<< FIM >>>")
-    sleep(5)
+    # sleep(2)

@@ -1,8 +1,10 @@
 #! bash
 pyinstaller \
+    --log-level=INFO \
     --onefile \
-    --name "Windown-JW-File-Merge" \
-    --specpath ./extra \
-    --distpath "./" \
-    -i "./icon.png" \
-    -c ./src/main.py
+    --console \
+    --clean \
+    --distpath="." \
+    --name="Windown-JW-File-Merge" \
+    --icon="extra/icon.png" \
+    main.py
