@@ -958,6 +958,6 @@ if __name__ == "__main__":
     createNewBkpFIle()
 
     print(">> Limpando pastas...")
-    # clearDirAllDirs()
+    clearDirAllDirs()
 
     # print("\n<<< FIM >>>")
