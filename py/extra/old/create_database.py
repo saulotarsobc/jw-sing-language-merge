@@ -577,18 +577,6 @@ def createNewDataBase():
             LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
 
         END;
-
-        CREATE TRIGGER TR_Raise_Error_Before_Delete_LastModified BEFORE DELETE ON LastModified BEGIN
-        SELECT
-            RAISE (FAIL, 'DELETE FROM LastModified not allowed');
-
-        END;
-
-        CREATE TRIGGER TR_Raise_Error_Before_Insert_LastModified BEFORE INSERT ON LastModified BEGIN
-        SELECT
-            RAISE (FAIL, 'INSERT INTO LastModified not allowed');
-
-        END;
     ''')
 
     con.commit()

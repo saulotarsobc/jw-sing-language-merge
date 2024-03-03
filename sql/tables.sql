@@ -17,8 +17,6 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     LastModified (LastModified TEXT NOT NULL);
 
-DROP TABLE IF EXISTS Location;
-
 -- Location definition
 CREATE TABLE IF NOT EXISTS
     Location (
@@ -345,35 +343,35 @@ CREATE TABLE IF NOT EXISTS
         )
     );
 
-CREATE INDEX IX_Location_KeySymbol_MepsLanguage_BookNumber_ChapterNumber ON Location (
+CREATE INDEX IF NOT EXISTS IX_Location_KeySymbol_MepsLanguage_BookNumber_ChapterNumber ON Location (
     KeySymbol,
     MepsLanguage,
     BookNumber,
     ChapterNumber
 );
 
-CREATE INDEX IX_Location_MepsLanguage_DocumentId ON Location (MepsLanguage, DocumentId);
+CREATE INDEX IF NOT EXISTS IX_Location_MepsLanguage_DocumentId ON Location (MepsLanguage, DocumentId);
 
-CREATE INDEX IX_TagMap_TagId ON TagMap (TagId);
+CREATE INDEX IF NOT EXISTS IX_TagMap_TagId ON TagMap (TagId);
 
-CREATE INDEX IX_TagMap_PlaylistItemId_TagId_Position ON TagMap (PlaylistItemId, TagId, Position);
+CREATE INDEX IF NOT EXISTS IX_TagMap_PlaylistItemId_TagId_Position ON TagMap (PlaylistItemId, TagId, Position);
 
-CREATE INDEX IX_TagMap_LocationId_TagId_Position ON TagMap (LocationId, TagId, Position);
+CREATE INDEX IF NOT EXISTS IX_TagMap_LocationId_TagId_Position ON TagMap (LocationId, TagId, Position);
 
-CREATE INDEX IX_TagMap_NoteId_TagId_Position ON TagMap (NoteId, TagId, Position);
+CREATE INDEX IF NOT EXISTS IX_TagMap_NoteId_TagId_Position ON TagMap (NoteId, TagId, Position);
 
-CREATE INDEX IX_Tag_Name_Type_TagId ON Tag (Name, Type, TagId);
+CREATE INDEX IF NOT EXISTS IX_Tag_Name_Type_TagId ON Tag (Name, Type, TagId);
 
-CREATE INDEX IX_PlaylistItem_ThumbnailFilePath ON PlaylistItem (ThumbnailFilePath);
+CREATE INDEX IF NOT EXISTS IX_PlaylistItem_ThumbnailFilePath ON PlaylistItem (ThumbnailFilePath);
 
-CREATE INDEX IX_PlaylistItemLocationMap_LocationId ON PlaylistItemLocationMap (LocationId);
+CREATE INDEX IF NOT EXISTS IX_PlaylistItemLocationMap_LocationId ON PlaylistItemLocationMap (LocationId);
 
-CREATE INDEX IX_PlaylistItemIndependentMediaMap_IndependentMediaId ON PlaylistItemIndependentMediaMap (IndependentMediaId);
+CREATE INDEX IF NOT EXISTS IX_PlaylistItemIndependentMediaMap_IndependentMediaId ON PlaylistItemIndependentMediaMap (IndependentMediaId);
 
-CREATE INDEX IX_UserMark_LocationId ON UserMark (LocationId);
+CREATE INDEX IF NOT EXISTS IX_UserMark_LocationId ON UserMark (LocationId);
 
-CREATE INDEX IX_BlockRange_UserMarkId ON BlockRange (UserMarkId);
+CREATE INDEX IF NOT EXISTS IX_BlockRange_UserMarkId ON BlockRange (UserMarkId);
 
-CREATE INDEX IX_Note_LastModified_LocationId ON Note (LastModified, LocationId);
+CREATE INDEX IF NOT EXISTS IX_Note_LastModified_LocationId ON Note (LastModified, LocationId);
 
-CREATE INDEX IX_Note_LocationId_BlockIdentifier ON Note (LocationId, BlockIdentifier);
+CREATE INDEX IF NOT EXISTS IX_Note_LocationId_BlockIdentifier ON Note (LocationId, BlockIdentifier);
