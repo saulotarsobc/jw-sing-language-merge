@@ -1,110 +1,28 @@
-import os
-import sqlite3
-import zipfile
-from shutil import copy, rmtree
-from datetime import datetime
-import pytz
-import json
-from hashlib import sha256
-import uuid
-from os import makedirs, listdir, remove
-
-
-JWFILE1 = "bkp1.jwlibrary"
-JWFILE2 = "bkp2.jwlibrary"
-FINALFILENAME = "Merged_Backup.jwlibrary"
-HASH = "<=hash>="
-
-makedirs("data-1", exist_ok=True)
-makedirs("data-2", exist_ok=True)
-makedirs("data-3", exist_ok=True)
-
-
-def clearDir(dir):
-    for file in listdir(dir):
-        remove(f"{dir}/{file}")
-
-
-def clearDirAllDirs():
-    rmtree("data-1",)
-    rmtree("data-2")
-    rmtree("data-3")
-
-
-def readData1():
-    with zipfile.ZipFile(JWFILE1, "r") as zip_ref:
-        files = zip_ref.namelist()
-        zip_ref.extractall("data-1")
-
-
-def readData2():
-    with zipfile.ZipFile(JWFILE2, "r") as zip_ref:
-        files = zip_ref.namelist()
-        zip_ref.extractall("data-2")
-
-
-def copyAllFilesToData3():
-    for file in listdir("data-1"):
-        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            copy(f"data-1/{file}", f"data-3/{file}")
-
-    for file in listdir("data-2"):
-        if file != "userData.db" and file != "manifest.json" and file != "default_thumbnail.png":
-            copy(f"data-2/{file}", f"data-3/{file}")
-
-
-def copyThumbNail():
-    copy("extra/default_thumbnail.png", "data-3/default_thumbnail.png")
-
-
-def hashCalc():
-    global HASH
-    with open("data-3/userData.db", "rb") as f:
-        HASH = sha256(f.read()).hexdigest()
-
-
-def manifestGenerator():
-    now = datetime.now(pytz.timezone("America/Santarem"))
-    now_date = now.strftime("%Y-%m-%d")
-    hour_minute_second = now.strftime("%H-%M-%S")
-    now_iso = now.isoformat("T", "seconds")
-    now_utc = now.astimezone(pytz.UTC)
-    now_utc_iso = now_utc.isoformat("T", "seconds").replace("+00:00", "Z")
-    schema_version = 11
-
-    j = f"{{\"name\":\"{FINALFILENAME}\",\"creationDate\":\"{now_date}\",\"version\":1,\"type\":0,\"userDataBackup\":{{\"lastModifiedDate\":\"{now_iso}\",\"deviceName\":\"saulotarsobc\",\"databaseName\":\"userData.db\",\"hash\":\"{HASH}\",\"schemaVersion\":{schema_version}}}}}"
-    manifest = json.loads(j)
-
-    with open("data-3/manifest.json", "w") as f:
-        json.dump(manifest, f)
-
-
 def createNewDataBase():
     con = sqlite3.connect("./data-3/userData.db")
 
     cur = con.cursor()
 
-    cur.executescript('''-- database: ./userData.db
-        -- IndependentMedia definition
-        CREATE TABLE IF NOT EXISTS
+    # Create tables
+    cur.executescript('''CREATE TABLE -- IndependentMedia definition
             IndependentMedia (
                 IndependentMediaId INTEGER NOT NULL PRIMARY KEY,
                 OriginalFilename TEXT NOT NULL,
                 FilePath TEXT NOT NULL UNIQUE,
                 MimeType TEXT NOT NULL,
                 Hash TEXT NOT NULL,
-                CHECK (length(OriginalFilename) > 0),
-                CHECK (length(FilePath) > 0),
-                CHECK (length(MimeType) > 0),
-                CHECK (length(Hash) > 0)
+                CHECK (length (OriginalFilename) > 0),
+                CHECK (length (FilePath) > 0),
+                CHECK (length (MimeType) > 0),
+                CHECK (length (Hash) > 0)
             );
 
         -- LastModified definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             LastModified (LastModified TEXT NOT NULL);
 
         -- Location definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             Location (
                 LocationId INTEGER NOT NULL PRIMARY KEY,
                 BookNumber INTEGER,
@@ -116,21 +34,21 @@ def createNewDataBase():
                 MepsLanguage INTEGER,
                 Type INTEGER NOT NULL,
                 Title TEXT,
-                -- UNIQUE (
-                --     BookNumber,
-                --     ChapterNumber,
-                --     KeySymbol,
-                --     MepsLanguage,
-                --     Type
-                -- ),
-                -- UNIQUE (
-                --     KeySymbol,
-                --     IssueTagNumber,
-                --     MepsLanguage,
-                --     DocumentId,
-                --     Track,
-                --     Type
-                -- ),
+                UNIQUE (
+                    BookNumber,
+                    ChapterNumber,
+                    KeySymbol,
+                    MepsLanguage,
+                    Type
+                ),
+                UNIQUE (
+                    KeySymbol,
+                    IssueTagNumber,
+                    MepsLanguage,
+                    DocumentId,
+                    Track,
+                    Type
+                ),
                 CHECK (
                     (
                         Type = 0
@@ -144,7 +62,7 @@ def createNewDataBase():
                                 AND (
                                     (
                                         KeySymbol IS NOT NULL
-                                        AND (length(KeySymbol) > 0)
+                                        AND (length (KeySymbol) > 0)
                                     )
                                     OR (
                                         DocumentId IS NOT NULL
@@ -156,7 +74,7 @@ def createNewDataBase():
                                 BookNumber IS NOT NULL
                                 AND BookNumber != 0
                                 AND KeySymbol IS NOT NULL
-                                AND (length(KeySymbol) > 0)
+                                AND (length (KeySymbol) > 0)
                                 AND (
                                     ChapterNumber IS NULL
                                     OR ChapterNumber = 0
@@ -168,7 +86,7 @@ def createNewDataBase():
                                 AND BookNumber IS NOT NULL
                                 AND BookNumber != 0
                                 AND KeySymbol IS NOT NULL
-                                AND (length(KeySymbol) > 0)
+                                AND (length (KeySymbol) > 0)
                             )
                         )
                     )
@@ -190,7 +108,7 @@ def createNewDataBase():
                             OR DocumentId = 0
                         )
                         AND KeySymbol IS NOT NULL
-                        AND (length(KeySymbol) > 0)
+                        AND (length (KeySymbol) > 0)
                         AND Track IS NULL
                     )
                     OR Type != 1
@@ -211,26 +129,37 @@ def createNewDataBase():
                 )
             );
 
+        CREATE INDEX IX_Location_KeySymbol_MepsLanguage_BookNumber_ChapterNumber ON Location (
+            KeySymbol,
+            MepsLanguage,
+            BookNumber,
+            ChapterNumber
+        );
+
+        CREATE INDEX IX_Location_MepsLanguage_DocumentId ON Location (MepsLanguage, DocumentId);
+
         -- PlaylistItemAccuracy definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItemAccuracy (
                 PlaylistItemAccuracyId INTEGER NOT NULL PRIMARY KEY,
                 Description TEXT NOT NULL UNIQUE
             );
 
         -- Tag definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             Tag (
                 TagId INTEGER NOT NULL PRIMARY KEY,
                 Type INTEGER NOT NULL,
                 Name TEXT NOT NULL,
                 UNIQUE (Type, Name),
-                CHECK (length(Name) > 0),
+                CHECK (length (Name) > 0),
                 CHECK (Type IN (0, 1, 2))
             );
 
+        CREATE INDEX IX_Tag_Name_Type_TagId ON Tag (Name, Type, TagId);
+
         -- Bookmark definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             Bookmark (
                 BookmarkId INTEGER NOT NULL PRIMARY KEY,
                 LocationId INTEGER NOT NULL,
@@ -242,7 +171,8 @@ def createNewDataBase():
                 BlockIdentifier INTEGER,
                 FOREIGN KEY (LocationId) REFERENCES Location (LocationId),
                 FOREIGN KEY (PublicationLocationId) REFERENCES Location (LocationId),
-                CONSTRAINT PublicationLocationId_Slot UNIQUE (PublicationLocationId, Slot) CHECK (
+                CONSTRAINT PublicationLocationId_Slot UNIQUE (PublicationLocationId, Slot),
+                CHECK (
                     (
                         BlockType = 0
                         AND BlockIdentifier IS NULL
@@ -255,7 +185,7 @@ def createNewDataBase():
             );
 
         -- InputField definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             InputField (
                 LocationId INTEGER NOT NULL,
                 TextTag TEXT NOT NULL,
@@ -265,7 +195,7 @@ def createNewDataBase():
             );
 
         -- PlaylistItem definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItem (
                 PlaylistItemId INTEGER NOT NULL PRIMARY KEY,
                 Label TEXT NOT NULL,
@@ -276,12 +206,14 @@ def createNewDataBase():
                 ThumbnailFilePath TEXT,
                 FOREIGN KEY (Accuracy) REFERENCES PlaylistItemAccuracy (PlaylistItemAccuracyId),
                 FOREIGN KEY (ThumbnailFilePath) REFERENCES IndependentMedia (FilePath),
-                CHECK (length(Label) > 0),
+                CHECK (length (Label) > 0),
                 CHECK (EndAction IN (0, 1, 2, 3))
             );
 
+        CREATE INDEX IX_PlaylistItem_ThumbnailFilePath ON PlaylistItem (ThumbnailFilePath);
+
         -- PlaylistItemIndependentMediaMap definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItemIndependentMediaMap (
                 PlaylistItemId INTEGER NOT NULL,
                 IndependentMediaId INTEGER NOT NULL,
@@ -291,8 +223,10 @@ def createNewDataBase():
                 FOREIGN KEY (IndependentMediaId) REFERENCES IndependentMedia (IndependentMediaId)
             ) WITHOUT ROWID;
 
+        CREATE INDEX IX_PlaylistItemIndependentMediaMap_IndependentMediaId ON PlaylistItemIndependentMediaMap (IndependentMediaId);
+
         -- PlaylistItemLocationMap definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItemLocationMap (
                 PlaylistItemId INTEGER NOT NULL,
                 LocationId INTEGER NOT NULL,
@@ -303,8 +237,10 @@ def createNewDataBase():
                 FOREIGN KEY (LocationId) REFERENCES Location (LocationId)
             ) WITHOUT ROWID;
 
+        CREATE INDEX IX_PlaylistItemLocationMap_LocationId ON PlaylistItemLocationMap (LocationId);
+
         -- PlaylistItemMarker definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItemMarker (
                 PlaylistItemMarkerId INTEGER NOT NULL PRIMARY KEY,
                 PlaylistItemId INTEGER NOT NULL,
@@ -317,7 +253,7 @@ def createNewDataBase():
             );
 
         -- PlaylistItemMarkerBibleVerseMap definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItemMarkerBibleVerseMap (
                 PlaylistItemMarkerId INTEGER NOT NULL,
                 VerseId INTEGER NOT NULL,
@@ -326,7 +262,7 @@ def createNewDataBase():
             ) WITHOUT ROWID;
 
         -- PlaylistItemMarkerParagraphMap definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             PlaylistItemMarkerParagraphMap (
                 PlaylistItemMarkerId INTEGER NOT NULL,
                 MepsDocumentId INTEGER NOT NULL,
@@ -342,7 +278,7 @@ def createNewDataBase():
             ) WITHOUT ROWID;
 
         -- UserMark definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             UserMark (
                 UserMarkId INTEGER NOT NULL PRIMARY KEY,
                 ColorIndex INTEGER NOT NULL,
@@ -353,8 +289,10 @@ def createNewDataBase():
                 FOREIGN KEY (LocationId) REFERENCES Location (LocationId)
             );
 
+        CREATE INDEX IX_UserMark_LocationId ON UserMark (LocationId);
+
         -- BlockRange definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             BlockRange (
                 BlockRangeId INTEGER NOT NULL PRIMARY KEY,
                 BlockType INTEGER NOT NULL,
@@ -366,8 +304,10 @@ def createNewDataBase():
                 FOREIGN KEY (UserMarkId) REFERENCES UserMark (UserMarkId)
             );
 
+        CREATE INDEX IX_BlockRange_UserMarkId ON BlockRange (UserMarkId);
+
         -- Note definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             Note (
                 NoteId INTEGER NOT NULL PRIMARY KEY,
                 Guid TEXT NOT NULL UNIQUE,
@@ -375,8 +315,8 @@ def createNewDataBase():
                 LocationId INTEGER,
                 Title TEXT,
                 Content TEXT,
-                LastModified TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-                Created TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+                LastModified TEXT NOT NULL DEFAULT (strftime ('%Y-%m-%dT%H:%M:%SZ', 'now')),
+                Created TEXT NOT NULL DEFAULT (strftime ('%Y-%m-%dT%H:%M:%SZ', 'now')),
                 BlockType INTEGER NOT NULL DEFAULT 0,
                 BlockIdentifier INTEGER,
                 CHECK (
@@ -393,8 +333,12 @@ def createNewDataBase():
                 FOREIGN KEY (LocationId) REFERENCES Location (LocationId)
             );
 
+        CREATE INDEX IX_Note_LastModified_LocationId ON Note (LastModified, LocationId);
+
+        CREATE INDEX IX_Note_LocationId_BlockIdentifier ON Note (LocationId, BlockIdentifier);
+
         -- TagMap definition
-        CREATE TABLE IF NOT EXISTS
+        CREATE TABLE
             TagMap (
                 TagMapId INTEGER NOT NULL PRIMARY KEY,
                 PlaylistItemId INTEGER,
@@ -429,42 +373,14 @@ def createNewDataBase():
                 )
             );
 
-        CREATE INDEX IX_Location_KeySymbol_MepsLanguage_BookNumber_ChapterNumber ON Location (
-            KeySymbol,
-            MepsLanguage,
-            BookNumber,
-            ChapterNumber
-        );
-
-        CREATE INDEX IX_Location_MepsLanguage_DocumentId ON Location (MepsLanguage, DocumentId);
-
         CREATE INDEX IX_TagMap_TagId ON TagMap (TagId);
-
         CREATE INDEX IX_TagMap_PlaylistItemId_TagId_Position ON TagMap (PlaylistItemId, TagId, Position);
-
         CREATE INDEX IX_TagMap_LocationId_TagId_Position ON TagMap (LocationId, TagId, Position);
-
         CREATE INDEX IX_TagMap_NoteId_TagId_Position ON TagMap (NoteId, TagId, Position);
-
-        CREATE INDEX IX_Tag_Name_Type_TagId ON Tag (Name, Type, TagId);
-
-        CREATE INDEX IX_PlaylistItem_ThumbnailFilePath ON PlaylistItem (ThumbnailFilePath);
-
-        CREATE INDEX IX_PlaylistItemLocationMap_LocationId ON PlaylistItemLocationMap (LocationId);
-
-        CREATE INDEX IX_PlaylistItemIndependentMediaMap_IndependentMediaId ON PlaylistItemIndependentMediaMap (IndependentMediaId);
-
-        CREATE INDEX IX_UserMark_LocationId ON UserMark (LocationId);
-
-        CREATE INDEX IX_BlockRange_UserMarkId ON BlockRange (UserMarkId);
-
-        CREATE INDEX IX_Note_LastModified_LocationId ON Note (LastModified, LocationId);
-
-        CREATE INDEX IX_Note_LocationId_BlockIdentifier ON Note (LocationId, BlockIdentifier);
     ''')
 
-    cur.executescript('''-- database: userData.db
-        CREATE TRIGGER TR_Update_LastModified_Delete_Tag DELETE ON Tag BEGIN
+    # Create trigers
+    cur.executescript('''CREATE TRIGGER TR_Update_LastModified_Delete_Tag DELETE ON Tag BEGIN
         UPDATE LastModified
         SET
             LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
@@ -661,338 +577,7 @@ def createNewDataBase():
             LastModified = strftime ('%Y-%m-%dT%H:%M:%SZ', 'now');
 
         END;
-
-        CREATE TRIGGER TR_Raise_Error_Before_Delete_LastModified BEFORE DELETE ON LastModified BEGIN
-        SELECT
-            RAISE (FAIL, 'DELETE FROM LastModified not allowed');
-
-        END;
-
-        CREATE TRIGGER TR_Raise_Error_Before_Insert_LastModified BEFORE INSERT ON LastModified BEGIN
-        SELECT
-            RAISE (FAIL, 'INSERT INTO LastModified not allowed');
-
-        END;
     ''')
 
     con.commit()
     con.close()
-
-
-def copyDatabase():
-    copy("extra/userData.db", "data-3/userData.db")
-
-
-def getDataFromDb1():
-    con1 = sqlite3.connect("data-1/userData.db")
-    con3 = sqlite3.connect("data-3/userData.db")
-
-    cur1 = con1.cursor()
-    cur3 = con3.cursor()
-
-    data = cur1.execute("SELECT * FROM Location").fetchall()
-    cur3.executemany("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM Tag").fetchall()
-    cur3.executemany("INSERT INTO Tag VALUES(?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM TagMap").fetchall()
-    cur3.executemany("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM Note").fetchall()
-    cur3.executemany("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM Bookmark").fetchall()
-    cur3.executemany("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM UserMark").fetchall()
-    cur3.executemany("INSERT INTO UserMark VALUES(?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM BlockRange").fetchall()
-    cur3.executemany("INSERT INTO BlockRange VALUES(?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM InputField").fetchall()
-    cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", data)
-
-    # data = cur1.execute("SELECT * FROM LastModified").fetchall()
-    # cur3.executemany("INSERT INTO LastModified VALUES(?)", data)
-
-    data = cur1.execute("SELECT * FROM IndependentMedia").fetchall()
-    cur3.executemany("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM PlaylistItem").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
-    cur3.executemany("INSERT INTO PlaylistItemAccuracy VALUES(?,?)", data)
-
-    data = cur1.execute(
-        "SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
-    cur3.executemany(
-        "INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
-    cur3.executemany(
-        "INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)", data)
-
-    data = cur1.execute("SELECT * FROM PlaylistItemMarker").fetchall()
-    cur3.executemany(
-        "INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)", data)
-
-    data = cur1.execute(
-        "SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
-    cur3.executemany(
-        "INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)", data)
-
-    data = cur1.execute(
-        "SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
-    cur3.executemany(
-        "INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)", data)
-
-    # commit all
-    con1.commit()
-    con3.commit()
-
-    # close all
-    con1.close()
-    con3.close()
-
-
-def getDataFromDb2():
-    con2 = sqlite3.connect("data-2/userData.db")
-    con3 = sqlite3.connect("data-3/userData.db")
-
-    cur2 = con2.cursor()
-    cur3 = con3.cursor()
-
-    # mapped ids
-    mapId = {
-        "Location": {},
-        "Tag": {},
-        "Bookmark": {},
-        "UserMark": {},
-        "Note": {},
-        "PlaylistItemAccuracy": {},
-        "PlaylistItem": {},
-        "IndependentMedia": {},
-        "TagMap": {},
-        "PlaylistItemMarker": {},
-    }
-
-    # Location
-    data = cur2.execute("SELECT * FROM Location").fetchall()
-    nextId = cur3.execute("SELECT MAX(LocationId) FROM Location").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['Location'][r[0]] = nextId
-        cur3.execute("INSERT INTO Location VALUES(?,?,?,?,?,?,?,?,?,?)",
-                     (nextId, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
-
-    # Tag
-    data = cur2.execute("SELECT * FROM Tag").fetchall()
-    nextId = cur3.execute("SELECT MAX(TagId) FROM Tag").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['Tag'][r[0]] = nextId
-        existing_data = cur3.execute(
-            "SELECT * FROM Tag WHERE Type = ? AND Name = ?", (r[1], r[2])).fetchone()
-        if existing_data is None:
-            cur3.execute("INSERT INTO Tag VALUES(?,?,?)", (nextId, r[1], r[2]))
-        else:
-            cur3.execute("INSERT INTO Tag VALUES(?,?,?)",
-                         (nextId, r[1], r[2] + f" - {str(uuid.uuid4())[:6]}"))
-
-    # PlaylistItem
-    data = cur2.execute("SELECT * FROM PlaylistItem").fetchall()
-    nextId = cur3.execute(
-        "SELECT MAX(PlaylistItemId) FROM PlaylistItem").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['PlaylistItem'][r[0]] = nextId
-        cur3.execute("INSERT INTO PlaylistItem VALUES(?,?,?,?,?,?,?)",
-                     (nextId, r[1], r[2], r[3], r[4], r[5], r[6]))
-
-    # TagMap
-    data = cur2.execute("SELECT * FROM TagMap").fetchall()
-    nextId = cur3.execute("SELECT MAX(TagMapId) FROM TagMap").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['TagMap'][r[0]] = nextId
-        cur3.execute("INSERT INTO TagMap VALUES(?,?,?,?,?,?)", (nextId, mapId["PlaylistItem"][r[1]], mapId["Location"].get(
-            r[2]), mapId["Note"].get(r[3]), mapId["Tag"][r[4]], r[5]))
-
-    # Bookmark
-    data = cur2.execute("SELECT * FROM Bookmark").fetchall()
-    nextId = cur3.execute("SELECT MAX(BookmarkId) FROM Bookmark").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['Bookmark'][r[0]] = nextId
-        cur3.execute("INSERT INTO Bookmark VALUES(?,?,?,?,?,?,?,?)", (nextId,
-                     mapId["Location"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7]))
-
-    # InputField
-    data = cur2.execute("SELECT * FROM InputField").fetchall()
-    cur3.executemany("INSERT INTO InputField VALUES(?,?,?)", data)
-
-    # UserMark
-    data = cur2.execute("SELECT * FROM UserMark").fetchall()
-    nextId = cur3.execute("SELECT MAX(UserMarkId) FROM UserMark").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['UserMark'][r[0]] = nextId
-        cur3.execute("INSERT INTO UserMark VALUES(?,?,?,?,?)",
-                     (nextId, mapId["Location"][r[1]], r[2], r[3], r[4], r[5]))
-
-    # BlockRange
-    data = cur2.execute("SELECT * FROM BlockRange").fetchall()
-    nextId = cur3.execute(
-        "SELECT MAX(BlockRangeId) FROM BlockRange").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['BlockRange'][r[0]] = nextId
-        cur3.execute("INSERT INTO BlockRange VALUES(?,?,?,?,?)",
-                     (nextId, r[1], r[2], r[3], mapId["UserMark"][r[4]]))
-
-    # Note
-    data = cur2.execute("SELECT * FROM Note").fetchall()
-    nextId = cur3.execute("SELECT MAX(NoteId) FROM Note").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['Note'][r[0]] = nextId
-        cur3.execute("INSERT INTO Note VALUES(?,?,?,?,?,?,?,?,?,?)", (nextId,
-                     mapId["UserMark"][r[1]], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
-
-    # PlaylistItemAccuracy
-    data = cur2.execute("SELECT * FROM PlaylistItemAccuracy").fetchall()
-    nextId = cur3.execute(
-        "SELECT MAX(PlaylistItemAccuracyId) FROM PlaylistItemAccuracy").fetchone()[0]
-
-    for r in data:
-        nextId += 1
-        existing_data = cur3.execute(
-            "SELECT * FROM PlaylistItemAccuracy WHERE Description = ?", (r[1],)).fetchone()
-        if existing_data is None:
-            cur3.execute(
-                "INSERT INTO PlaylistItemAccuracy VALUES(?,?)", (nextId, r[1]))
-            mapId['PlaylistItemAccuracy'][r[0]] = nextId
-        else:
-            print(">> ⚠️ Mapeando IDs para a tabela PlaylistItemAccuracy")
-            mapId['PlaylistItemAccuracy'][r[0]] = existing_data[0]
-
-    # PlaylistItemLocationMap
-    data = cur2.execute("SELECT * FROM PlaylistItemLocationMap").fetchall()
-    for r in data:
-        cur3.execute("INSERT INTO PlaylistItemLocationMap VALUES(?,?,?,?)",
-                     (mapId["PlaylistItem"][r[0]], mapId["Location"][r[1]], r[2], r[3]))
-
-    # IndependentMedia
-    data = cur2.execute("SELECT * FROM IndependentMedia").fetchall()
-    nextId = cur3.execute(
-        "SELECT MAX(IndependentMediaId) FROM IndependentMedia").fetchone()[0]
-    for r in data:
-        existing_data = cur3.execute(
-            "SELECT IndependentMediaId FROM IndependentMedia WHERE FilePath = ?", (r[2],)).fetchone()
-        if existing_data:
-            existing_id = existing_data[0]
-            mapId['IndependentMedia'][r[0]] = existing_id
-        else:
-            nextId += 1
-            cur3.execute("INSERT INTO IndependentMedia VALUES(?,?,?,?,?)",
-                         (nextId, r[1], r[2], r[3], r[4]))
-            mapId['IndependentMedia'][r[0]] = nextId
-
-    # PlaylistItemIndependentMediaMap
-    data = cur2.execute(
-        "SELECT * FROM PlaylistItemIndependentMediaMap").fetchall()
-    for r in data:
-        nextId += 1
-        cur3.execute("INSERT INTO PlaylistItemIndependentMediaMap VALUES(?,?,?)",
-                     (mapId["PlaylistItem"][r[0]], mapId["IndependentMedia"][r[1]], r[2]))
-
-    # PlaylistItemMarker
-    data = cur2.execute("SELECT * FROM PlaylistItemMarker").fetchall()
-    nextId = cur3.execute(
-        "SELECT MAX(PlaylistItemMarkerId) FROM PlaylistItemMarker").fetchone()[0]
-    for r in data:
-        nextId += 1
-        mapId['PlaylistItemMarker'][r[0]] = nextId
-        cur3.execute("INSERT INTO PlaylistItemMarker VALUES(?,?,?,?,?,?)",
-                     (nextId, mapId["PlaylistItem"][r[1]], r[2], r[3], r[4], r[5]))
-
-    # PlaylistItemMarkerParagraphMap
-    data = cur2.execute(
-        "SELECT * FROM PlaylistItemMarkerParagraphMap").fetchall()
-    for r in data:
-        cur3.execute("INSERT INTO PlaylistItemMarkerParagraphMap VALUES(?,?,?,?)",
-                     (mapId["PlaylistItemMarker"][r[0]], r[1], r[2], r[3]))
-
-    # PlaylistItemMarkerBibleVerseMap
-    data = cur2.execute(
-        "SELECT * FROM PlaylistItemMarkerBibleVerseMap").fetchall()
-    for r in data:
-        cur3.execute("INSERT INTO PlaylistItemMarkerBibleVerseMap VALUES(?,?)",
-                     (mapId["PlaylistItemMarker"][r[0]], r[1]))
-
-    # commit all
-    con2.commit()
-    con3.commit()
-
-    # close all
-    con2.close()
-    con3.close()
-
-
-def createNewBkpFIle():
-    zf = zipfile.ZipFile(FINALFILENAME, "w", compression=zipfile.ZIP_DEFLATED)
-    for file in listdir('data-3'):
-        zf.write(f"data-3/{file}", arcname=file)
-
-    zf.close()
-
-
-if __name__ == "__main__":
-
-    print("<<< Iniciando...>>>")
-    print(">> Limpando pastas...")
-    clearDir("data-1")
-    clearDir("data-2")
-    clearDir("data-3")
-
-    print(">> Descopactando bkp 1 e compiando seus arquivos para data-1")
-    readData1()
-
-    print(">> Descopactando bkp 2 e compiando seus arquivos para data-2")
-    readData2()
-
-    print(">> Copiando todos os arquivos de /data-1 e /data-2 para /data-3")
-    copyAllFilesToData3()
-
-    # TODO: Gerar a nova base de dados via código
-    # print(">> Criando nova base de dados")
-    # createNewDataBase()
-
-    print(">> Copiando nova base de dados")
-    copyDatabase()
-
-    print(">> Copiando dados da base-1 para a nova base")
-    getDataFromDb1()
-
-    print(">> Copiando dados da base-2 para a nova base")
-    getDataFromDb2()
-
-    print(">> Copiando default_thumbnail.png para /data-3")
-    copyThumbNail()
-
-    print(">> Gerando nova hash")
-    hashCalc()
-
-    print(">> Criando e copiando manifest.json para /data-3")
-    manifestGenerator()
-
-    print(">> Criando novo .jwlibrary")
-    createNewBkpFIle()
-
-    print(">> Limpando pastas...")
-    # clearDirAllDirs()
-
-    # print("\n<<< FIM >>>")

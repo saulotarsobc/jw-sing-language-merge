@@ -2,7 +2,7 @@
   "name": "js",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "tsx --watch src/index.ts",
     "build": "tsc",
@@ -13,7 +13,12 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.20",
+    "@types/unzipper": "^0.10.9",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "promisify": "^0.0.3",
+    "unzipper": "^0.10.14"
   }
 }
